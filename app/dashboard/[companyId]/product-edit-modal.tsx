@@ -21,8 +21,8 @@ import {
 } from "@/components/ui/select";
 import { Button } from "@whop/react/components";
 import { Switch } from "@/components/ui/switch";
-import { updateProductConfig } from "@/lib/actions/products";
-import { getPromoCodes } from "@/lib/actions/promo";
+import { updateProductConfig } from "@/app/actions/products";
+import { getPromoCodes } from "@/app/actions/promo";
 import { useRouter } from "next/navigation";
 
 type ProductConfig = {

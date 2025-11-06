@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { whopsdk } from "@/lib/whop-sdk";
-import { getApprovedReviewsByExperience } from "@/lib/actions/reviews";
+import { getApprovedReviewsByExperience } from "@/app/actions/reviews";
 import { ApprovedReviewsGrid } from "./approved-reviews-grid";
 import type { ApprovedReview } from "./types";
 

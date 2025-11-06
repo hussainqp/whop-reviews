@@ -6,7 +6,7 @@ import { useIframeSdk } from "@whop/react";
 import { Button } from "@whop/react/components";
 import { whopsdk } from '@/lib/whop-sdk';
 import { useToast } from '@/components/ui/toast-provider';
-import { createCheckoutConfiguration } from '@/lib/actions/credits';
+import { createCheckoutConfiguration } from '@/app/actions/credits';
 
 interface CreditPackage {
 	id: string;

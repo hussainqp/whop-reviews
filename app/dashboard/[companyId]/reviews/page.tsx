@@ -1,7 +1,7 @@
 import { headers } from "next/headers";
 import { whopsdk } from "@/lib/whop-sdk";
-import { getCompanyDataFromDB } from "@/lib/actions/company";
-import { getReviewsByStatus } from "@/lib/actions/reviews";
+import { getCompanyDataFromDB } from "@/app/actions/company";
+import { getReviewsByStatus } from "@/app/actions/reviews";
 import Onboarding from "../onboarding";
 import { ReviewsClient } from "./reviews-client";
 

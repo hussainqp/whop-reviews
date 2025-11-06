@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { whopsdk } from '@/lib/whop-sdk';
-import { getCompanyDataFromDB } from '@/lib/actions/company';
-import { getAnalyticsStats } from '@/lib/actions/analytics';
+import { getCompanyDataFromDB } from '@/app/actions/company';
+import { getAnalyticsStats } from '@/app/actions/analytics';
 import { AnalyticsDashboard } from './analytics-dashboard';
 
 export default async function AnalyticsPage({

@@ -2,7 +2,7 @@
 
 import { useState, useRef } from "react";
 import { Label } from "@/components/ui/label";
-import { submitReview } from "@/lib/actions/reviews";
+import { submitReview } from "@/app/actions/reviews";
 
 type ReviewType = "photo" | "video" | "any";
 

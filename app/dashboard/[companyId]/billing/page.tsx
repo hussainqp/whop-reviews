@@ -1,6 +1,6 @@
 import { headers } from 'next/headers';
 import { whopsdk } from '@/lib/whop-sdk';
-import { getCompanyDataFromDB } from '@/lib/actions/company';
+import { getCompanyDataFromDB } from '@/app/actions/company';
 import { BillingDashboard } from './billing-dashboard';
 
 export default async function BillingPage({

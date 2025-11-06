@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useTransition } from 'react';
-import { getReviewsByStatus } from '@/lib/actions/reviews';
+import { getReviewsByStatus } from '@/app/actions/reviews';
 import { ReviewsGrid } from './reviews-grid';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import type { Review } from './types';

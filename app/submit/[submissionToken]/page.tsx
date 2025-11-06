@@ -1,4 +1,4 @@
-import { getReviewByToken } from "@/lib/actions/reviews";
+import { getReviewByToken } from "@/app/actions/reviews";
 import { ReviewUploadForm } from "./review-upload-form";
 
 export default async function SubmitReviewPage({

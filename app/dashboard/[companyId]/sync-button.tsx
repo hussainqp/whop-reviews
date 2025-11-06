@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Button } from "@whop/react/components";
-import { syncProducts } from "@/lib/actions/products";
+import { syncProducts } from "@/app/actions/products";
 import { useRouter } from "next/navigation";
 import {
 	Dialog,

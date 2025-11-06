@@ -1,9 +1,9 @@
 import { headers } from "next/headers";
 import { whopsdk } from "@/lib/whop-sdk";
-import { getCompany } from "@/lib/actions/company";
-import { getCompanyDataFromDB, saveInitialCompany } from "@/lib/actions/company";
+import { getCompany } from "@/app/actions/company";
+import { getCompanyDataFromDB, saveInitialCompany } from "@/app/actions/company";
 import Onboarding from "./onboarding";
-import { syncProductsToDB, getProductConfigs } from "@/lib/actions/products";
+import { syncProductsToDB, getProductConfigs } from "@/app/actions/products";
 import { ProductsTable } from "./products-table";
 import { SyncButton } from "./sync-button";
 

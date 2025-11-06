@@ -6,7 +6,7 @@ import db from "@/lib/db";
 import { merchants, productConfigs, reviews, processedEvents, emailLogs } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { randomUUID } from "crypto";
-import { sendEmail } from "@/lib/actions/email";
+import { sendEmail } from "@/app/actions/email";
 import { render } from '@react-email/render';
 import ReviewRequestEmail from '@/components/email/review-request-email';
 
