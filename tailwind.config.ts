@@ -1,3 +1,35 @@
 import { frostedThemePlugin } from "@whop/react/tailwind";
 
-export default { plugins: [frostedThemePlugin()] };
+export default {
+	plugins: [frostedThemePlugin()],
+	safelist: [
+		'bg-blue-600',
+		'bg-blue-700',
+		'bg-blue-800',
+		'hover:bg-blue-700',
+		'active:bg-blue-800',
+		'bg-gray-600',
+		'bg-gray-700',
+		'bg-gray-800',
+		'hover:bg-gray-600',
+		'active:bg-gray-800',
+		'bg-gray-12',
+		'bg-gray-11',
+		'bg-gray-10',
+		'hover:bg-gray-11',
+		'active:bg-gray-10',
+		'text-gray-1',
+		'text-white',
+		'shadow-lg',
+		'hover:shadow-xl',
+		'text-base',
+		'font-semibold',
+		'px-6',
+		'py-4',
+		'rounded-lg',
+		'w-full',
+		'transition-all',
+		'duration-200',
+		'ease-in-out',
+	],
+};

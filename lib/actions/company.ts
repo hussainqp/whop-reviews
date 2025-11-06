@@ -1,0 +1,65 @@
+'use server';
+
+import { cache } from "react";
+import { whopsdk } from "@/lib/whop-sdk";
+import { verifyUser } from "./authentication";
+import db from "@/lib/db";
+import { merchants } from "@/lib/db/schema";
+import { eq } from "drizzle-orm";
+
+export const getCompany = cache(async (companyId: string) => {
+	try {
+		await verifyUser(companyId);
+		const company = await whopsdk.companies.retrieve(companyId);
+		return company;
+	} catch (err: unknown) {
+		console.error('[GET COMPANY] Error while retrieving company:', err);
+		throw new Error("Failed to retrieve company");
+	}
+});
+
+export async function saveInitialCompany({
+	companyId,
+	name
+}: {
+	companyId: string;
+	name?: string | null;
+}) {
+	try {
+		if (!companyId) {
+			throw new Error("companyId is required");
+		}
+		await verifyUser(companyId);
+		
+		await db
+			.insert(merchants)
+			.values({
+				companyId,
+				name: name ?? null,
+			})
+			.onConflictDoNothing({ target: merchants.companyId });
+
+		return { success: true } as const;
+	} catch (err: unknown) {
+		console.error('[SAVE INITIAL COMPANY] Error while saving company:', err);
+		throw new Error("Failed to save company");
+	}
+}
+
+export const getCompanyDataFromDB = cache(async (companyId: string) => {
+	try {
+		if (!companyId) {
+			throw new Error("companyId is required");
+		}
+		await verifyUser(companyId);
+		const rows = await db
+			.select()
+			.from(merchants)
+			.where(eq(merchants.companyId, companyId))
+			.limit(1);
+		return rows[0] ?? null;
+	} catch (err: unknown) {
+		console.error('[GET COMPANY DATA FROM DB] Error while fetching company:', err);
+		throw new Error("Failed to fetch company");
+	}
+});
