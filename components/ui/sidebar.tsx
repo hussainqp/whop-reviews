@@ -397,12 +397,12 @@ SidebarGroupLabel.displayName = "SidebarGroupLabel";
 
 const SidebarGroupAction = React.forwardRef<
 	React.ElementRef<typeof Slot>,
-	React.ComponentProps<typeof Slot>
+	React.ComponentProps<typeof Slot> & { asChild?: boolean }
 >(({ className, asChild = false, ...props }, ref) => {
 	return (
 		<Slot
 			ref={ref}
-			asChild={asChild}
+			{...(asChild ? { asChild: true } : {})}
 			className={cn(
 				"ml-auto shrink-0",
 				className
@@ -643,9 +643,9 @@ const SidebarMenuSubButton = React.forwardRef<
 	React.ComponentProps<typeof Slot> & {
 		asChild?: boolean;
 		isActive?: boolean;
-		size?: "sm" | "md" | "lg";
+		size?: "sm" | "lg" | "default";
 	}
->(({ asChild = false, isActive, size = "md", className, ...props }, ref) => {
+>(({ asChild = false, isActive, size = "default", className, ...props }, ref) => {
 	return (
 		<SidebarMenuButton
 			ref={ref}
@@ -671,8 +671,11 @@ const Tooltip = ({ children }: { children: React.ReactNode }) => {
 
 const TooltipTrigger = React.forwardRef<
 	HTMLDivElement,
-	React.ComponentProps<"div">
->(({ children, ...props }, ref) => {
+	React.ComponentProps<"div"> & { asChild?: boolean }
+>(({ children, asChild, ...props }, ref) => {
+	if (asChild && React.isValidElement(children)) {
+		return React.cloneElement(children, { ...props } as any);
+	}
 	return <div ref={ref} {...props}>{children}</div>;
 });
 TooltipTrigger.displayName = "TooltipTrigger";

@@ -2,7 +2,7 @@ import { headers } from "next/headers";
 import { whopsdk } from "@/lib/whop-sdk";
 import { getApprovedReviewsByExperience } from "@/app/actions/reviews";
 import { getCompanyDataFromDB } from "@/app/actions/company";
-import { PreviewSection } from "./preview-section";
+import { PreviewSection } from "../experiences/preview-section";
 import type { ApprovedReview } from "@/app/experiences/[experienceId]/types";
 
 export default async function ExperiencesPage({
