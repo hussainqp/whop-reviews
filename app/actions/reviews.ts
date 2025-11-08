@@ -5,7 +5,7 @@ import { reviews, productConfigs, merchants } from "@/lib/db/schema";
 import { eq, and, gt, desc } from "drizzle-orm";
 import { supabase } from "@/lib/supabase";
 import { randomUUID } from "crypto";
-import { getCompanyDataFromDB } from "./company";
+import { getCompanyDataFromDB, getCompanyDataFromDBPublic, getExperienceDataFromDBPublic } from "./company";
 import { sendEmail } from "./email";
 import { render } from '@react-email/render';
 import ReviewApprovalEmail from '@/components/email/review-approval-email';
@@ -73,8 +73,8 @@ export async function submitReview(formData: FormData) {
 		const submissionToken = formData.get("submissionToken") as string;
 		const comment = (formData.get("comment") as string) || null;
 		const fileType = formData.get("fileType") as "photo" | "video";
-		// TODO: get rating from formData
-		const rating = formData.get("rating") as number | null;
+		const ratingStr = formData.get("rating") as string | null;
+		const rating = ratingStr ? parseInt(ratingStr, 10) : null;
 
 		// Validate inputs
 		if (!file || !submissionToken || !fileType) {
@@ -201,10 +201,58 @@ export async function getPendingReviews(companyId: string) {
 	return getReviewsByStatus(companyId, "pending_approval");
 }
 
-export async function getApprovedReviewsByExperience(experienceId: string) {
+export async function getAllReviews(companyId: string) {
+	try {
+		// Get merchant from companyId
+		const merchant = await getCompanyDataFromDB(companyId);
+		if (!merchant) {
+			throw new Error("Merchant not found");
+		}
+
+		// Fetch all reviews with product config, ordered by createdAt
+		const result = await db
+			.select({
+				review: reviews,
+				productConfig: productConfigs,
+			})
+			.from(reviews)
+			.innerJoin(productConfigs, eq(reviews.productConfigId, productConfigs.id))
+			.where(eq(reviews.merchantId, merchant.id))
+			.orderBy(desc(reviews.createdAt));
+
+		return result.map(({ review, productConfig }) => ({
+			id: review.id,
+			customerName: review.customerName,
+			customerEmail: review.customerEmail,
+			fileUrl: review.fileUrl,
+			fileType: review.fileType,
+			comment: review.comment,
+			rating: review.rating,
+			status: review.status,
+			createdAt: review.createdAt ? review.createdAt.toISOString() : null,
+			submittedAt: review.submittedAt ? review.submittedAt.toISOString() : null,
+			approvedAt: review.approvedAt ? review.approvedAt.toISOString() : null,
+			rejectedAt: review.rejectedAt ? review.rejectedAt.toISOString() : null,
+			productName: productConfig.productName,
+		}));
+	} catch (err: unknown) {
+		console.error('[GET ALL REVIEWS] Error while fetching all reviews:', err);
+		const message = (err as { message?: string })?.message || "Failed to fetch reviews";
+		throw new Error(message);
+	}
+}
+
+export async function getApprovedReviewsByExperience(experienceId: string, dashboard: boolean = false) {
 	try {
 		// Get merchant from experienceId (which should be companyId)
-		const merchant = await getCompanyDataFromDB(experienceId);
+		// Use public version for public-facing pages (no authentication required)
+		let merchant = null;
+		if (dashboard) {
+			 merchant = await getCompanyDataFromDBPublic(experienceId);
+		} else {
+			merchant = await getExperienceDataFromDBPublic(experienceId);
+		}
+
 		if (!merchant) {
 			// Return empty array if merchant not found (for public-facing page)
 			return [];

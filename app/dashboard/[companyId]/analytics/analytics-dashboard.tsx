@@ -1,7 +1,7 @@
 'use client';
 
-import { Mail, CheckCircle2, Clock, XCircle, Star, ShoppingBag, CreditCard, TrendingUp } from 'lucide-react';
-import Link from 'next/link';
+import { Mail, CheckCircle2, Clock, XCircle, Star, TrendingUp } from 'lucide-react';
+import { ReviewsTable } from './reviews-table';
 
 interface AnalyticsStats {
 	totalEmailsSent: number;
@@ -16,12 +16,29 @@ interface AnalyticsStats {
 	creditBalance: number;
 }
 
+type Review = {
+	id: string;
+	customerName: string;
+	customerEmail: string | null;
+	fileUrl: string | null;
+	fileType: 'photo' | 'video' | null;
+	comment: string | null;
+	rating: number | null;
+	status: 'pending_submission' | 'pending_approval' | 'approved' | 'rejected';
+	createdAt: string | null;
+	submittedAt: string | null;
+	approvedAt: string | null;
+	rejectedAt: string | null;
+	productName: string;
+};
+
 interface AnalyticsDashboardProps {
 	stats: AnalyticsStats;
 	companyId: string;
+	reviews: Review[];
 }
 
-export function AnalyticsDashboard({ stats, companyId }: AnalyticsDashboardProps) {
+export function AnalyticsDashboard({ stats, companyId, reviews }: AnalyticsDashboardProps) {
 	return (
 		<div className="flex flex-col p-8 gap-4">
 			{/* Header */}
@@ -62,12 +79,20 @@ export function AnalyticsDashboard({ stats, companyId }: AnalyticsDashboardProps
 
 			{/* Reviews Statistics Row */}
 			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-				{/* Total Reviews */}
+				{/* Pending Submission */}
 				<StatCard
-					icon={<Star className="h-5 w-5" />}
-					label="Total Reviews"
-					value={stats.totalReviews}
-					color="text-gray-12"
+					icon={<Clock className="h-5 w-5 text-yellow-600" />}
+					label="Pending Submission"
+					value={stats.pendingSubmission}
+					color="text-yellow-600"
+				/>
+
+				{/* Pending Approval */}
+				<StatCard
+					icon={<Clock className="h-5 w-5 text-orange-600" />}
+					label="Pending Approval"
+					value={stats.pendingApproval}
+					color="text-orange-600"
 				/>
 
 				{/* Approved Reviews */}
@@ -78,20 +103,12 @@ export function AnalyticsDashboard({ stats, companyId }: AnalyticsDashboardProps
 					color="text-green-600"
 				/>
 
-				{/* Pending Reviews */}
-				<StatCard
-					icon={<Clock className="h-5 w-5 text-yellow-600" />}
-					label="Pending"
-					value={stats.pendingApproval}
-					color="text-yellow-600"
-				/>
-
 				{/* Rejected Reviews */}
 				<StatCard
-					icon={<XCircle className="h-5 w-5 text-gray-10" />}
+					icon={<XCircle className="h-5 w-5 text-red-600" />}
 					label="Rejected"
 					value={stats.rejectedReviews}
-					color="text-gray-12"
+					color="text-red-600"
 				/>
 			</div>
 
@@ -114,27 +131,12 @@ export function AnalyticsDashboard({ stats, companyId }: AnalyticsDashboardProps
 				/>
 			</div>
 
-			{/* Quick Actions */}
-			<div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-				<ActionCard
-					icon={<ShoppingBag className="h-5 w-5" />}
-					label="Products"
-					description="Manage product configurations"
-					href={`/dashboard/${companyId}`}
-				/>
-				<ActionCard
-					icon={<Star className="h-5 w-5" />}
-					label="Reviews"
-					description="Review and manage submissions"
-					href={`/dashboard/${companyId}/reviews`}
-				/>
-				<ActionCard
-					icon={<CreditCard className="h-5 w-5" />}
-					label="Billing"
-					description='Manage your billing and subscription'
-					href={`/dashboard/${companyId}/billing`}
-				/>
+			{/* Reviews Table */}
+			<div className="mt-8">
+				<h2 className="text-6 font-semibold text-gray-12 mb-4">All Reviews</h2>
+				<ReviewsTable data={reviews} />
 			</div>
+
 		</div>
 	);
 }
@@ -158,25 +160,4 @@ function StatCard({ icon, label, value, color }: StatCardProps) {
 	);
 }
 
-interface ActionCardProps {
-	icon: React.ReactNode;
-	label: string;
-	description: string;
-	href: string;
-}
-
-function ActionCard({ icon, label, description, href }: ActionCardProps) {
-	return (
-		<Link
-			href={href}
-			className="rounded-lg border border-gray-a4 bg-gray-a2 p-4 hover:border-gray-a6 hover:bg-gray-a3 transition-colors"
-		>
-			<div className="flex items-center gap-3 mb-2">
-				<div className="text-gray-10">{icon}</div>
-				<p className="font-medium text-gray-12">{label}</p>
-			</div>
-			<p className="text-sm text-gray-10">{description}</p>
-		</Link>
-	);
-}
 

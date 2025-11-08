@@ -2,7 +2,8 @@ import { WhopApp } from "@whop/react/components";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { Navigation } from "@/components/navigation";
+import { SidebarNavigation } from "@/components/sidebar-navigation";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { ToastProvider } from "@/components/ui/toast-provider";
 
 const geistSans = Geist({
@@ -32,8 +33,12 @@ export default function RootLayout({
 			>
 				<WhopApp>
 					<ToastProvider>
-						<Navigation />
-						{children}
+						<SidebarProvider defaultOpen={true}>
+							<SidebarNavigation />
+							<SidebarInset>
+								{children}
+							</SidebarInset>
+						</SidebarProvider>
 					</ToastProvider>
 				</WhopApp>
 			</body>

@@ -86,7 +86,7 @@ export function ApprovedReviewsGrid({ reviews }: ApprovedReviewsGridProps) {
 				<div className="inline-flex items-center gap-3 mb-4">
 					<Trophy className="h-8 w-8 text-yellow-600" />
 					<h2 className="text-7 font-bold bg-gradient-to-r from-gray-12 to-gray-10 bg-clip-text text-transparent">
-						Hall of Fame
+						Hall of Reviews
 					</h2>
 					<Trophy className="h-8 w-8 text-yellow-600" />
 				</div>

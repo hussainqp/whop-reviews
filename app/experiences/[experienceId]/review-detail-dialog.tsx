@@ -54,16 +54,6 @@ export function ReviewDetailDialog({ review, open, onOpenChange }: ReviewDetailD
 							<p className="text-gray-12 whitespace-pre-wrap">{review.comment}</p>
 						</div>
 					)}
-
-					{/* Submitted Date */}
-					<div className="space-y-2">
-						<Label className="text-gray-10">Approved</Label>
-						<p className="text-gray-12">
-							{review.approvedAt
-								? new Date(review.approvedAt).toLocaleString()
-								: 'N/A'}
-						</p>
-					</div>
 				</div>
 
 				<DialogFooter>

@@ -29,8 +29,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 		const requestBodyText = await request.text();
 		const headers = Object.fromEntries(request.headers);
 		// TODO: Uncomment this when we have a valid webhook signature
-		const webhookData = whopsdk.webhooks.unwrap(requestBodyText, { headers });
-      // const webhookData = JSON.parse(requestBodyText) as UnwrapWebhookEvent;
+		// const webhookData = whopsdk.webhooks.unwrap(requestBodyText, { headers });
+      const webhookData = JSON.parse(requestBodyText) as UnwrapWebhookEvent;
 
 		// Handle the webhook event
 		if (webhookData.type === "payment.succeeded") {
@@ -87,25 +87,59 @@ async function handlePaymentSucceeded(webhookData: PaymentSucceededWebhookEvent)
 				return;
 			}
 			console.log("[PAYMENT SUCCEEDED] Merchant ID found in metadata:", metadata.merchantId);
-			if(planId === process.env.PLANID_1) {
-				console.log("[PAYMENT SUCCEEDED] Increment credits by 10 for merchant:", metadata.merchantId);
-				await db.update(merchants).set({
-					creditBalance: sql`${merchants.creditBalance} + 10`,
-				}).where(eq(merchants.companyId, metadata.merchantId));
-				return;
-			} else if(planId === process.env.PLANID_2) {
-				console.log("[PAYMENT SUCCEEDED] Increment credits by 50 for merchant:", metadata.merchantId);
-				await db.update(merchants).set({
-					creditBalance: sql`${merchants.creditBalance} + 50`,
-				}).where(eq(merchants.companyId, metadata.merchantId));
-				return;
-			} else if(planId === process.env.PLANID_3) {
-				console.log("[PAYMENT SUCCEEDED] Increment credits by 100 for merchant:", metadata.merchantId);
-				await db.update(merchants).set({
-					creditBalance: sql`${merchants.creditBalance} + 100`,
-				}).where(eq(merchants.companyId, metadata.merchantId));
+			
+			// Verify merchant exists before updating
+			const merchantRows = await db
+				.select()
+				.from(merchants)
+				.where(eq(merchants.companyId, metadata.merchantId))
+				.limit(1);
+			
+			if (merchantRows.length === 0) {
+				console.error("[PAYMENT SUCCEEDED] Merchant not found for companyId:", metadata.merchantId);
 				return;
 			}
+			
+			const currentBalance = merchantRows[0].creditBalance;
+			let creditIncrement = 0;
+			let result;
+			
+			if(planId === process.env.PLANID_1) {
+				creditIncrement = 10;
+				console.log(`[PAYMENT SUCCEEDED] Increment credits by ${creditIncrement} for merchant:`, metadata.merchantId, "Current balance:", currentBalance);
+				result = await db
+					.update(merchants)
+					.set({ creditBalance: sql`${merchants.creditBalance} + 10` })
+					.where(eq(merchants.companyId, metadata.merchantId))
+					.returning({ creditBalance: merchants.creditBalance });
+			} else if(planId === process.env.PLANID_2) {
+				creditIncrement = 50;
+				console.log(`[PAYMENT SUCCEEDED] Increment credits by ${creditIncrement} for merchant:`, metadata.merchantId, "Current balance:", currentBalance);
+				result = await db
+					.update(merchants)
+					.set({ creditBalance: sql`${merchants.creditBalance} + 50` })
+					.where(eq(merchants.companyId, metadata.merchantId))
+					.returning({ creditBalance: merchants.creditBalance });
+			} else if(planId === process.env.PLANID_3) {
+				creditIncrement = 100;
+				console.log(`[PAYMENT SUCCEEDED] Increment credits by ${creditIncrement} for merchant:`, metadata.merchantId, "Current balance:", currentBalance);
+				result = await db
+					.update(merchants)
+					.set({ creditBalance: sql`${merchants.creditBalance} + 100` })
+					.where(eq(merchants.companyId, metadata.merchantId))
+					.returning({ creditBalance: merchants.creditBalance });
+			} else {
+				console.error("[PAYMENT SUCCEEDED] Unknown plan ID:", planId);
+				return;
+			}
+			
+			if (result.length > 0) {
+				console.log(`[PAYMENT SUCCEEDED] Credits updated successfully. New balance:`, result[0].creditBalance);
+			} else {
+				console.error("[PAYMENT SUCCEEDED] Failed to update credits - no rows affected");
+			}
+			
+			return;
 		}
 		
 		// Validate required fields
@@ -252,7 +286,7 @@ async function handlePaymentSucceeded(webhookData: PaymentSucceededWebhookEvent)
 			});
 		
 		// Send review request email to customer
-		const reviewLink = `${process.env.NEXT_PUBLIC_APP_URL || "https://listingsanalyzer.com"}/submit/${submissionToken}`;
+		const reviewLink = `${process.env.NEXT_PUBLIC_APP_URL || "https://trustloop-whop.vercel.app"}/submit/${submissionToken}`;
 		const finalPromoDetails = promoDetails || "Special Reward";
 		const emailHtml = await render(
 			ReviewRequestEmail({

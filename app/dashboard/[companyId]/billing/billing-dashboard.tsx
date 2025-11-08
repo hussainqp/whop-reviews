@@ -17,7 +17,7 @@ export function BillingDashboard({ merchantId }: BillingDashboardProps) {
 			badgeColor: '',
 			borderColor: 'border-gray-a6',
 			popular: true,
-			planId: "plan_90TRgL2xUh1jD",
+			planId: "plan_i8yfYCw7atmJg",
 			message: 'Ideal for testing or occasional use',
 		},
 		{
@@ -29,7 +29,7 @@ export function BillingDashboard({ merchantId }: BillingDashboardProps) {
 			badgeColor: '',
 			borderColor: 'border-blue-600',
 			popular: false,
-			planId: "",
+			planId: "plan_SFq16YxgxwMqa",
 			message: 'Great for growing engagement',
 		},
 		{
@@ -41,7 +41,7 @@ export function BillingDashboard({ merchantId }: BillingDashboardProps) {
 			badgeColor: '',
 			borderColor: 'border-purple-600',
 			popular: false,	
-			planId:  "",
+			planId:  "plan_xgqPIQMkiZln2",
 			message: 'Perfect for bulk messaging or business use',
 		},
 	];

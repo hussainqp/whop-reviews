@@ -1,7 +1,7 @@
-import { headers } from "next/headers";
-import { whopsdk } from "@/lib/whop-sdk";
 import { getApprovedReviewsByExperience } from "@/app/actions/reviews";
-import { ApprovedReviewsGrid } from "./approved-reviews-grid";
+import { getExperienceDataFromDBPublic } from "@/app/actions/company";
+import { ReviewDisplay } from "./review-displays";
+import { Trophy } from "lucide-react";
 import type { ApprovedReview } from "./types";
 
 export default async function ExperiencePage({
@@ -10,22 +10,31 @@ export default async function ExperiencePage({
 	params: Promise<{ experienceId: string }>;
 }) {
 	const { experienceId } = await params;
-	// Ensure the user is logged in on whop.
-	const { userId } = await whopsdk.verifyUserToken(await headers());
+	// This is a public page - no authentication required
 
-	// Fetch approved reviews for this experience (experienceId maps to companyId)
-	let approvedReviews: ApprovedReview[];
+	// Fetch approved reviews and merchant settings
+	let approvedReviews: ApprovedReview[] = [];
+	let displayFormat: 'grid' | 'carousel' | 'list' | 'cards' = 'grid';
+	
 	try {
-		approvedReviews = await getApprovedReviewsByExperience(experienceId);
+		// Get merchant first to get display format
+		const merchant = await getExperienceDataFromDBPublic(experienceId);
+		if (merchant?.reviewDisplayFormat) {
+			displayFormat = merchant.reviewDisplayFormat as 'grid' | 'carousel' | 'list' | 'cards';
+		}
+		
+		// Then fetch reviews
+		approvedReviews = await getApprovedReviewsByExperience(experienceId, false);
 	} catch (error) {
 		// If merchant not found or other error, show empty state
+		console.error('[EXPERIENCE PAGE] Error fetching reviews:', error);
 		approvedReviews = [];
 	}
 
 	return (
 		<div className="flex flex-col min-h-screen bg-gradient-to-br from-gray-1 via-gray-2 to-gray-3">
 			{/* Hero Section */}
-			<div className="relative overflow-hidden py-16 px-8">
+			{/* <div className="relative overflow-hidden py-16 px-8">
 				<div className="absolute inset-0 bg-gradient-to-r from-yellow-600/10 via-blue-600/10 to-purple-600/10" />
 				<div className="relative max-w-4xl mx-auto text-center">
 					<h1 className="text-10 font-bold mb-4 bg-gradient-to-r from-gray-12 via-gray-11 to-gray-10 bg-clip-text text-transparent">
@@ -37,11 +46,24 @@ export default async function ExperiencePage({
 							: "Discover authentic reviews from our community"}
 					</p>
 				</div>
-			</div>
+			</div> */}
 
-			{/* Hall of Fame Grid Section */}
-			<div className="px-8 pb-16">
-				<ApprovedReviewsGrid reviews={approvedReviews} />
+			{/* Hall of Fame Section */}
+			<div className="px-8 pb-16 pt-8">
+				{/* Hall of Fame Header */}
+				<div className="mb-12 text-center">
+					<div className="inline-flex items-center gap-3 mb-4">
+						<Trophy className="h-8 w-8 text-yellow-600" />
+						<h2 className="text-7 font-bold bg-gradient-to-r from-gray-12 to-gray-10 bg-clip-text text-transparent">
+							Hall of Reviews
+						</h2>
+						<Trophy className="h-8 w-8 text-yellow-600" />
+					</div>
+					<p className="text-4 text-gray-10 max-w-2xl mx-auto">
+						Showcasing authentic reviews from our amazing customers
+					</p>
+				</div>
+				<ReviewDisplay reviews={approvedReviews} format={displayFormat} />
 			</div>
 		</div>
 	);

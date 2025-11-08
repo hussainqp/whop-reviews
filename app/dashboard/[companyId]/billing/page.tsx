@@ -28,7 +28,7 @@ export default async function BillingPage({
 	}
 
 	return (
-		<BillingDashboard merchantId={existing.id} />
+		<BillingDashboard merchantId={existing.companyId} />
 	);
 }
 

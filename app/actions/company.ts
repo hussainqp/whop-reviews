@@ -63,3 +63,67 @@ export const getCompanyDataFromDB = cache(async (companyId: string) => {
 		throw new Error("Failed to fetch company");
 	}
 });
+
+// Public version without authentication (for public-facing pages)
+export const getCompanyDataFromDBPublic = cache(async (companyId: string) => {
+	try {
+		if (!companyId) {
+			return null;
+		}
+
+		const company = await getCompanyDataFromDB(companyId);
+		const rows = await db
+			.select()
+			.from(merchants)
+			.where(eq(merchants.companyId, companyId))
+			.limit(1);
+			console.log(rows);
+		return rows[0] ?? null;
+	} catch (err: unknown) {
+		console.error('[GET COMPANY DATA FROM DB PUBLIC] Error while fetching company:', err);
+		return null;
+	}
+});
+
+
+
+export const getExperienceDataFromDBPublic = cache(async (experienceId: string) => {
+	try {
+		if (!experienceId) {
+			return null;
+		}
+
+		const experience = await whopsdk.experiences.retrieve(experienceId);
+		if (!experience.company) {
+			return null;
+		}
+		const rows = await db
+			.select()
+			.from(merchants)
+			.where(eq(merchants.companyId, experience.company.id))
+			.limit(1);
+		return rows[0] ?? null;
+	} catch (err: unknown) {
+		console.error('[GET EXPERIENCE DATA FROM DB PUBLIC] Error while fetching merchant:', err);
+		return null;
+	}
+});
+
+export async function updateReviewDisplayFormat(
+	companyId: string,
+	format: 'grid' | 'carousel' | 'list' | 'cards'
+) {
+	try {
+		await verifyUser(companyId);
+		
+		await db
+			.update(merchants)
+			.set({ reviewDisplayFormat: format })
+			.where(eq(merchants.companyId, companyId));
+
+		return { success: true };
+	} catch (err: unknown) {
+		console.error('[UPDATE REVIEW DISPLAY FORMAT] Error:', err);
+		throw new Error("Failed to update review display format");
+	}
+}

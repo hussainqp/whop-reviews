@@ -28,6 +28,11 @@ export const merchants = pgTable('merchants', {
 	reviewRequestTemplateId: text('review_request_template_id'),
 	rewardDeliveryTemplateId: text('reward_delivery_template_id'),
 	
+	// Review display settings
+	reviewDisplayFormat: text('review_display_format', { 
+		enum: ['grid', 'carousel', 'list', 'cards'] 
+	}).notNull().default('grid'),
+	
 	...timestamps,
 }, (table: any) => ({
 	companyIdIdx: index('merchants_company_id_idx').on(table.companyId)
