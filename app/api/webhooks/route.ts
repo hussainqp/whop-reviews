@@ -188,17 +188,24 @@ async function handlePaymentSucceeded(webhookData: PaymentSucceededWebhookEvent)
 		if (productConfig.promoCode) {
 			try {
 				const promoCode = await whopsdk.promoCodes.retrieve(productConfig.promoCode);
-				const promoAmountOff = promoCode.amount_off;
-				const promoCurrency = promoCode.currency;
-				const promoProduct = promoCode.product?.title;
-				const promoType = promoCode.promo_type;
 				
-				// Use placeholder for review request (don't reveal code until approval)
-				// The actual code name will be shown in approval email
-				if (promoType === 'percentage') {
-					promoDetails = `XXXXXX - ${promoAmountOff}% off` + (promoProduct ? ` on ${promoProduct}` : '');
-				} else if (promoType === 'flat_amount') {
-					promoDetails = `XXXXXX - ${promoAmountOff} ${promoCurrency} off` + (promoProduct ? ` on ${promoProduct}` : '');
+				// Only use promo code if it's active
+				if (promoCode.status && promoCode.status !== 'active') {
+					promoCodeError = `Promo code is not active (status: ${promoCode.status})`;
+					console.error("[PAYMENT SUCCEEDED] Promo code is not active:", promoCode.status);
+				} else {
+					const promoAmountOff = promoCode.amount_off;
+					const promoCurrency = promoCode.currency;
+					const promoProduct = promoCode.product?.title;
+					const promoType = promoCode.promo_type;
+					
+					// Use placeholder for review request (don't reveal code until approval)
+					// The actual code name will be shown in approval email
+					if (promoType === 'percentage') {
+						promoDetails = `XXXXXX - ${promoAmountOff}% off` + (promoProduct ? ` on ${promoProduct}` : '');
+					} else if (promoType === 'flat_amount') {
+						promoDetails = `XXXXXX - ${promoAmountOff} ${promoCurrency} off` + (promoProduct ? ` on ${promoProduct}` : '');
+					}
 				}
 				
 			} catch (promoError) {

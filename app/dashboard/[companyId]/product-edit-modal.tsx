@@ -67,6 +67,7 @@ export function ProductEditModal({
 			setIsLoadingPromoCodes(true);
 			getPromoCodes(companyId)
 				.then((response) => {
+					// Only show active promo codes (already filtered in getPromoCodes)
 					const codes = response.data.map((pc: any) => ({
 						id: pc.id,
 						code: pc.code,
@@ -74,23 +75,31 @@ export function ProductEditModal({
 					setPromoCodes(codes);
 
 					// Auto-select promo code if it matches one in the list (by ID)
+					// If the product's promo code is not in the active list, clear it
 					if (product?.promoCode && codes.length > 0) {
 						const matchingPromo = codes.find((pc) => pc.id === product.promoCode);
 						if (matchingPromo) {
-							// Promo code ID from DB matches one in the list - keep it selected
+							// Promo code ID from DB matches one in the active list - keep it selected
 							setFormData((prev) => ({
 								...prev,
 								promoCode: matchingPromo.id,
 								promoCodeName: matchingPromo.code,
 							}));
 						} else {
-							// Promo code ID from DB doesn't match any in list - clear it
+							// Promo code ID from DB doesn't match any active promo code - clear it
 							setFormData((prev) => ({
 								...prev,
 								promoCode: "",
 								promoCodeName: "",
 							}));
 						}
+					} else if (product?.promoCode && codes.length === 0) {
+						// No active promo codes available, clear the selected one
+						setFormData((prev) => ({
+							...prev,
+							promoCode: "",
+							promoCodeName: "",
+						}));
 					}
 				})
 				.catch((err) => {

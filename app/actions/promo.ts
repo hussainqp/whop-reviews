@@ -13,7 +13,11 @@ export const getPromoCodes = cache(async (companyId: string) => {
 
 		const promoCodes = [];
 		for await (const promoCode of whopsdk.promoCodes.list({ company_id: companyId })) {
-			promoCodes.push(promoCode);
+			// Only include active promo codes
+			// Check if status exists and is 'active', or if status doesn't exist, assume it's active
+			if (!promoCode.status || promoCode.status === 'active') {
+				promoCodes.push(promoCode);
+			}
 		}
 
 		return {
