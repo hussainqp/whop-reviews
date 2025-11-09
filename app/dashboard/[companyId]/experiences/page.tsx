@@ -36,9 +36,13 @@ export default async function ExperiencesPage({
 	try {
 		approvedReviews = await getApprovedReviewsByExperience(companyId, true);
 		if (existing?.reviewDisplayFormat) {
-			const format = existing.reviewDisplayFormat as 'grid' | 'list' | 'cards';
-			// Fallback to 'grid' if format is 'carousel' (legacy)
-			displayFormat = format === 'carousel' ? 'grid' : format;
+			const format = existing.reviewDisplayFormat as 'grid' | 'list' | 'cards' | 'carousel';
+			// Fallback to 'grid' if format is 'carousel' (legacy) or invalid
+			if (format === 'carousel' || (format !== 'grid' && format !== 'list' && format !== 'cards')) {
+				displayFormat = 'grid';
+			} else {
+				displayFormat = format;
+			}
 		}
 	} catch (error) {
 		// If merchant not found or other error, show empty state

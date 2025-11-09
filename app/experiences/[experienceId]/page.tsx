@@ -20,9 +20,13 @@ export default async function ExperiencePage({
 		// Get merchant first to get display format
 		const merchant = await getExperienceDataFromDBPublic(experienceId);
 		if (merchant?.reviewDisplayFormat) {
-			const format = merchant.reviewDisplayFormat as 'grid' | 'list' | 'cards';
-			// Fallback to 'grid' if format is 'carousel' (legacy)
-			displayFormat = format === 'carousel' ? 'grid' : format;
+			const format = merchant.reviewDisplayFormat as 'grid' | 'list' | 'cards' | 'carousel';
+			// Fallback to 'grid' if format is 'carousel' (legacy) or invalid
+			if (format === 'carousel' || (format !== 'grid' && format !== 'list' && format !== 'cards')) {
+				displayFormat = 'grid';
+			} else {
+				displayFormat = format;
+			}
 		}
 		
 		// Then fetch reviews
