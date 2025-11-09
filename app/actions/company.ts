@@ -111,7 +111,7 @@ export const getExperienceDataFromDBPublic = cache(async (experienceId: string) 
 
 export async function updateReviewDisplayFormat(
 	companyId: string,
-	format: 'grid' | 'carousel' | 'list' | 'cards'
+	format: 'grid' | 'list' | 'cards'
 ) {
 	try {
 		await verifyUser(companyId);

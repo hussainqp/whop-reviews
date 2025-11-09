@@ -10,21 +10,11 @@ import {
 	getSortedRowModel,
 	SortingState,
 	useReactTable,
-	VisibilityState,
 } from "@tanstack/react-table";
-import { ArrowUpDown, Edit, Columns, Loader2 } from "lucide-react";
+import { ArrowUpDown, Edit, Loader2 } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Button } from "@whop/react/components";
 import { ProductEditModal } from "./product-edit-modal";
-import {
-	DropdownMenu,
-	DropdownMenuCheckboxItem,
-	DropdownMenuContent,
-	DropdownMenuLabel,
-	DropdownMenuSeparator,
-	DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 
 type ProductConfig = {
 	id: string;
@@ -44,14 +34,14 @@ export const columns: ColumnDef<ProductConfig>[] = [
 			return (
 				<button
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+					className="flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity text-xs sm:text-sm"
 				>
-					Product Name
-					<ArrowUpDown className="h-4 w-4" />
+					<span className="whitespace-nowrap">Product Name</span>
+					<ArrowUpDown className="h-3 w-3 sm:h-4 sm:w-4" />
 				</button>
 			);
 		},
-		cell: ({ row }) => <div className="font-medium">{row.getValue("productName")}</div>,
+		cell: ({ row }) => <div className="font-medium text-xs sm:text-sm">{row.getValue("productName")}</div>,
 	},
 	{
 		accessorKey: "status",
@@ -59,10 +49,10 @@ export const columns: ColumnDef<ProductConfig>[] = [
 			return (
 				<button
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+					className="hidden md:flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity text-xs sm:text-sm"
 				>
-					Status
-					<ArrowUpDown className="h-4 w-4" />
+					<span className="whitespace-nowrap">Status</span>
+					<ArrowUpDown className="h-3 w-3 sm:h-4 sm:w-4" />
 				</button>
 			);
 		},
@@ -76,14 +66,14 @@ export const columns: ColumnDef<ProductConfig>[] = [
 			};
 			const statusColor = statusColors[status] || statusColors.visible;
 			return (
-				<div className="flex items-center gap-2">
+				<div className="hidden md:flex items-center gap-2">
 					<div
 						className="h-4 w-4 rounded-full"
 						style={{
 							backgroundColor: statusColor.bg,
 						}}
 					/>
-					<span className="capitalize">{statusColor.text}</span>
+					<span className="capitalize text-xs sm:text-sm">{statusColor.text}</span>
 				</div>
 			);
 		},
@@ -94,16 +84,16 @@ export const columns: ColumnDef<ProductConfig>[] = [
 			return (
 				<button
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+					className="hidden md:flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity text-xs sm:text-sm"
 				>
-					Review Type
-					<ArrowUpDown className="h-4 w-4" />
+					<span className="whitespace-nowrap">Review Type</span>
+					<ArrowUpDown className="h-3 w-3 sm:h-4 sm:w-4" />
 				</button>
 			);
 		},
 		cell: ({ row }) => {
 			const type = row.getValue("reviewType") as string | null;
-			return <div className="capitalize">{type ?? "—"}</div>;
+			return <div className="capitalize text-xs sm:text-sm hidden md:block">{type ?? "—"}</div>;
 		},
 	},
 	{
@@ -112,10 +102,10 @@ export const columns: ColumnDef<ProductConfig>[] = [
 			return (
 				<button
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-					className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+					className="flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity text-xs sm:text-sm"
 				>
-					Enabled
-					<ArrowUpDown className="h-4 w-4" />
+					<span className="whitespace-nowrap">Enabled</span>
+					<ArrowUpDown className="h-3 w-3 sm:h-4 sm:w-4" />
 				</button>
 			);
 		},
@@ -124,27 +114,27 @@ export const columns: ColumnDef<ProductConfig>[] = [
 			return (
 				<div className="flex items-center gap-2">
 					<div
-						className="h-4 w-4 rounded-full"
+						className="h-3 w-3 sm:h-4 sm:w-4 rounded-full"
 						style={{
 							backgroundColor: isEnabled ? "#22c55e" : "#ef4444",
 						}}
 					/>
-					<span className="capitalize">{isEnabled ? "Yes" : "No"}</span>
+					<span className="capitalize text-xs sm:text-sm">{isEnabled ? "Yes" : "No"}</span>
 				</div>
 			);
 		},
 	},
 	{
 		accessorKey: "promoCodeName",
-		header: "Promo Code",
+		header: () => <span className="text-xs sm:text-sm whitespace-nowrap hidden md:inline">Promo Code</span>,
 		cell: ({ row }) => {
 			const code = row.getValue("promoCodeName") as string | null;
-			return <div className="font-mono text-sm">{code ?? "—"}</div>;
+			return <div className="font-mono text-xs sm:text-sm hidden md:block">{code ?? "—"}</div>;
 		},
 	},
 	{
 		id: "actions",
-		header: "Actions",
+		header: () => <span className="text-xs sm:text-sm whitespace-nowrap">Actions</span>,
 		cell: ({ row }) => {
 			// This will be handled by the component
 			return null;
@@ -161,7 +151,6 @@ interface ProductsTableProps {
 export function ProductsTable({ data, isLoading = false, companyId }: ProductsTableProps) {
 	const [sorting, setSorting] = React.useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([]);
-	const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({});
 	const [editingProduct, setEditingProduct] = React.useState<ProductConfig | null>(null);
 	const [isModalOpen, setIsModalOpen] = React.useState(false);
 
@@ -178,11 +167,9 @@ export function ProductsTable({ data, isLoading = false, companyId }: ProductsTa
 		getCoreRowModel: getCoreRowModel(),
 		getSortedRowModel: getSortedRowModel(),
 		getFilteredRowModel: getFilteredRowModel(),
-		onColumnVisibilityChange: setColumnVisibility,
 		state: {
 			sorting,
 			columnFilters,
-			columnVisibility,
 		},
 	});
 
@@ -199,70 +186,32 @@ export function ProductsTable({ data, isLoading = false, companyId }: ProductsTa
 
 	return (
 		<div className="w-full">
-			<div className="flex items-center justify-between py-4">
+			<div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between py-4 gap-4">
 				<Input
 					placeholder="Filter by product name..."
 					value={(table.getColumn("productName")?.getFilterValue() as string) ?? ""}
 					onChange={(event) =>
 						table.getColumn("productName")?.setFilterValue(event.target.value)
 					}
-					className="max-w-sm"
+					className="w-full sm:max-w-sm"
 				/>
-				<DropdownMenu>
-					<DropdownMenuTrigger asChild>
-						<Button variant="classic" size="2">
-							<Columns className="h-4 w-4 mr-2" />
-							Columns
-						</Button>
-					</DropdownMenuTrigger>
-					<DropdownMenuContent align="end" className="w-[200px]">
-						<DropdownMenuLabel>Toggle columns</DropdownMenuLabel>
-						<DropdownMenuSeparator />
-						{table
-							.getAllColumns()
-							.filter((column) => column.getCanHide() && column.id !== "actions")
-							.map((column) => {
-								return (
-									<DropdownMenuCheckboxItem
-										key={column.id}
-										className="capitalize"
-										checked={column.getIsVisible()}
-										onCheckedChange={(value) =>
-											column.toggleVisibility(!!value)
-										}
-									>
-									{column.id === "productName"
-										? "Product Name"
-										: column.id === "status"
-											? "Status"
-											: column.id === "reviewType"
-												? "Review Type"
-												: column.id === "isEnabled"
-													? "Enabled"
-													: column.id === "promoCode"
-														? "Promo Code"
-														: column.id}
-									</DropdownMenuCheckboxItem>
-								);
-							})}
-					</DropdownMenuContent>
-				</DropdownMenu>
 			</div>
-			<div className="rounded-md border border-gray-a4">
-				<Table>
+			<div className="rounded-md border border-gray-a4 overflow-x-auto -mx-4 sm:mx-0">
+				<div className="min-w-[400px] sm:min-w-[600px]">
+					<Table>
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
 							<TableRow key={headerGroup.id}>
 									{headerGroup.headers.map((header) => {
 									if (header.id === "actions") {
 										return (
-											<TableHead key={header.id} className="w-[150px]">
+											<TableHead key={header.id} className="w-[100px] sm:w-[150px]">
 												Actions
 											</TableHead>
 										);
 									}
 									return (
-										<TableHead key={header.id}>
+										<TableHead key={header.id} className={header.id === "status" || header.id === "reviewType" || header.id === "promoCodeName" ? "hidden md:table-cell" : ""}>
 											{header.isPlaceholder
 												? null
 												: flexRender(
@@ -293,14 +242,17 @@ export function ProductsTable({ data, isLoading = false, companyId }: ProductsTa
 													type="button"
 													title="Edit product"
 												>
-													<Edit className="h-4 w-4" />
+													<Edit className="h-3 w-3 sm:h-4 sm:w-4" />
 													<span className="sr-only">Edit</span>
 												</button>
 											</TableCell>
 										);
 									}
 									return (
-										<TableCell key={cell.id}>
+										<TableCell 
+											key={cell.id}
+											className={cell.column.id === "status" || cell.column.id === "reviewType" || cell.column.id === "promoCodeName" ? "hidden md:table-cell" : ""}
+										>
 											{flexRender(cell.column.columnDef.cell, cell.getContext())}
 										</TableCell>
 									);
@@ -316,8 +268,9 @@ export function ProductsTable({ data, isLoading = false, companyId }: ProductsTa
 						)}
 					</TableBody>
 				</Table>
+				</div>
 			</div>
-			<div className="flex-1 text-sm text-gray-10">
+			<div className="flex-1 text-xs sm:text-sm text-gray-10">
 				{table.getFilteredRowModel().rows.length} of {data.length} row(s)
 			</div>
 

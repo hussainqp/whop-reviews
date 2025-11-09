@@ -3,7 +3,8 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { SidebarNavigation } from "@/components/sidebar-navigation";
-import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarWrapper } from "@/components/sidebar-wrapper";
 import { ToastProvider } from "@/components/ui/toast-provider";
 
 const geistSans = Geist({
@@ -35,9 +36,9 @@ export default function RootLayout({
 					<ToastProvider>
 						<SidebarProvider defaultOpen={true}>
 							<SidebarNavigation />
-							<SidebarInset>
+							<SidebarWrapper>
 								{children}
-							</SidebarInset>
+							</SidebarWrapper>
 						</SidebarProvider>
 					</ToastProvider>
 				</WhopApp>

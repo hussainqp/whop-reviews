@@ -32,13 +32,13 @@ export default async function SubmitReviewPage({
 	const { review, productConfig } = data;
 
 	return (
-		<div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-4">
+		<div className="min-h-screen bg-gradient-to-br from-gray-900 via-black to-gray-900 p-4 sm:p-6 lg:p-8">
 			<div className="mx-auto w-full max-w-[600px] p-0">
-				<div className="my-2 p-3 text-center">
-					<h1 className="mx-0 mt-4 mb-2 p-0 text-center font-normal text-3xl text-white">
+				<div className="my-2 p-3 sm:p-4 text-center">
+					<h1 className="mx-0 mt-2 sm:mt-4 mb-2 p-0 text-center font-normal text-2xl sm:text-3xl text-white">
 						💬 Submit Your Review
 					</h1>
-					<p className="text-lg text-gray-200">
+					<p className="text-base sm:text-lg text-gray-200">
 						Share your experience with <strong className="text-white">{productConfig.productName}</strong>
 					</p>
 				</div>

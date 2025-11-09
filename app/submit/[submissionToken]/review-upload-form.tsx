@@ -155,10 +155,10 @@ export function ReviewUploadForm({
 
 	if (success) {
 		return (
-			<div className="rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-8 text-center">
-				<div className="mb-4 text-6xl text-green-500">✓</div>
-				<h2 className="mb-2 text-2xl font-semibold text-white">Review Submitted!</h2>
-				<p className="text-lg text-gray-200">
+			<div className="rounded-xl sm:rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-6 sm:p-8 text-center">
+				<div className="mb-4 text-4xl sm:text-6xl text-green-500">✓</div>
+				<h2 className="mb-2 text-xl sm:text-2xl font-semibold text-white">Review Submitted!</h2>
+				<p className="text-base sm:text-lg text-gray-200">
 					Thank you for your review, {customerName}. Your discount code will arrive within 24-48 hours.
 				</p>
 			</div>
@@ -166,11 +166,11 @@ export function ReviewUploadForm({
 	}
 
 	return (
-		<div className="space-y-6">
+		<div className="space-y-4 sm:space-y-6">
 			{/* Rating Section */}
-			<div className="rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-8">
-				<div className="text-center mb-6">
-					<Label className="text-lg font-semibold text-white mb-4 block">
+			<div className="rounded-xl sm:rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-4 sm:p-6 lg:p-8">
+				<div className="text-center mb-4 sm:mb-6">
+					<Label className="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4 block">
 						How would you rate your experience?
 					</Label>
 					<div className="flex justify-center">
@@ -183,18 +183,18 @@ export function ReviewUploadForm({
 				</div>
 			</div>
 
-			<form onSubmit={handleSubmit} className="space-y-6">
+			<form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
 				{/* File Upload Section */}
-				<div className="rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-8">
+				<div className="rounded-xl sm:rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-4 sm:p-6 lg:p-8">
 					<div className="space-y-4">
-						<Label htmlFor="file-upload" className="text-lg font-semibold text-white block mb-4">
+						<Label htmlFor="file-upload" className="text-base sm:text-lg font-semibold text-white block mb-3 sm:mb-4">
 							Upload Photo or Video
 						</Label>
 
 						<div
 							onDragOver={handleDragOver}
 							onDrop={handleDrop}
-							className={`relative flex min-h-[200px] flex-col items-center justify-center rounded-lg border-2 border-dashed p-8 transition-colors bg-white/5 backdrop-blur-sm ${
+							className={`relative flex min-h-[150px] sm:min-h-[200px] flex-col items-center justify-center rounded-lg border-2 border-dashed p-4 sm:p-6 lg:p-8 transition-colors bg-white/5 backdrop-blur-sm ${
 								selectedFile
 									? "border-blue-400/50"
 									: "border-white/30 hover:border-blue-400/50"
@@ -202,11 +202,11 @@ export function ReviewUploadForm({
 						>
 							{selectedFile ? (
 								<div className="text-center">
-									<div className="mb-2 text-4xl">
+									<div className="mb-2 text-3xl sm:text-4xl">
 										{selectedFile.type.startsWith("image/") ? "📷" : "🎥"}
 									</div>
-									<p className="mb-2 font-medium text-white">{selectedFile.name}</p>
-									<p className="text-sm text-gray-300">
+									<p className="mb-2 text-sm sm:text-base font-medium text-white break-all px-2">{selectedFile.name}</p>
+									<p className="text-xs sm:text-sm text-gray-300">
 										{(selectedFile.size / (1024 * 1024)).toFixed(2)} MB
 									</p>
 									<button
@@ -217,18 +217,18 @@ export function ReviewUploadForm({
 												fileInputRef.current.value = "";
 											}
 										}}
-										className="mt-4 text-sm text-blue-400 underline hover:text-blue-300"
+										className="mt-3 sm:mt-4 text-xs sm:text-sm text-blue-400 underline hover:text-blue-300"
 									>
 										Remove file
 									</button>
 								</div>
 							) : (
-								<div className="text-center">
-									<div className="mb-4 text-5xl">📎</div>
-									<p className="mb-2 text-white">
+								<div className="text-center px-2">
+									<div className="mb-3 sm:mb-4 text-4xl sm:text-5xl">📎</div>
+									<p className="mb-2 text-sm sm:text-base text-white">
 										Drag and drop your file here, or click to browse
 									</p>
-									<p className="text-sm text-gray-400">
+									<p className="text-xs sm:text-sm text-gray-400">
 										{reviewType === "photo"
 											? "JPEG, PNG, WebP (max 10MB)"
 											: reviewType === "video"
@@ -251,12 +251,12 @@ export function ReviewUploadForm({
 					</div>
 				</div>
 
-				{/* Comment Section */}
-				<div className="rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-8">
-					<div className="space-y-2">
-						<Label htmlFor="comment" className="text-lg font-medium text-white">
-							Tell us more about your experience (optional)
-						</Label>
+						{/* Comment Section */}
+						<div className="rounded-xl sm:rounded-2xl bg-white/10 backdrop-blur-lg border border-white/20 p-4 sm:p-6 lg:p-8">
+							<div className="space-y-2">
+								<Label htmlFor="comment" className="text-base sm:text-lg font-medium text-white">
+									Tell us more about your experience (optional)
+								</Label>
 						<textarea
 							id="comment"
 							value={comment}
@@ -277,14 +277,14 @@ export function ReviewUploadForm({
 					</div>
 				)}
 
-				{/* Submit Button */}
-				<button
-					type="submit"
-					disabled={!selectedFile || isUploading}
-					className="w-full rounded-xl bg-blue-600/20 backdrop-blur-lg border border-blue-400/30 px-12 py-5 text-center font-bold text-lg text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-600/30 hover:border-blue-400/50 hover:shadow-xl hover:shadow-blue-600/40 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-lg disabled:hover:bg-blue-600/20"
-				>
-					{isUploading ? "Uploading..." : "💬 Submit Review"}
-				</button>
+						{/* Submit Button */}
+						<button
+							type="submit"
+							disabled={!selectedFile || isUploading}
+							className="w-full rounded-xl bg-blue-600/20 backdrop-blur-lg border border-blue-400/30 px-6 sm:px-12 py-4 sm:py-5 text-center font-bold text-base sm:text-lg text-white shadow-lg shadow-blue-600/30 transition-all hover:bg-blue-600/30 hover:border-blue-400/50 hover:shadow-xl hover:shadow-blue-600/40 hover:scale-[1.02] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:scale-100 disabled:hover:shadow-lg disabled:hover:bg-blue-600/20"
+						>
+							{isUploading ? "Uploading..." : "💬 Submit Review"}
+						</button>
 			</form>
 		</div>
 	);

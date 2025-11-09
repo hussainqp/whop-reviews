@@ -157,20 +157,46 @@ const Sidebar = React.forwardRef<
 
 		if (collapsible === "none") {
 			return (
-				<div
-					className={cn(
-						"flex h-screen shrink-0 flex-col bg-gray-a1 text-gray-12 border-r border-gray-a4",
-						className
+				<>
+					{/* Desktop Sidebar */}
+					<div
+						className={cn(
+							"hidden md:flex h-screen shrink-0 flex-col bg-gray-a1 text-gray-12 border-r border-gray-a4",
+							className
+						)}
+						style={{
+							width: SIDEBAR_WIDTH,
+							...props.style,
+						} as React.CSSProperties}
+						ref={ref}
+						{...props}
+					>
+						{children}
+					</div>
+
+					{/* Mobile Overlay */}
+					{openMobile && (
+						<div
+							className="fixed inset-0 z-50 bg-gray-a1/80 md:hidden"
+							onClick={() => setOpenMobile(false)}
+						/>
 					)}
-					style={{
-						width: SIDEBAR_WIDTH,
-						...props.style,
-					} as React.CSSProperties}
-					ref={ref}
-					{...props}
-				>
-					{children}
-				</div>
+
+					{/* Mobile Sidebar */}
+					<div
+						data-state={openMobile ? "open" : "closed"}
+						className={cn(
+							"fixed inset-y-0 z-50 flex h-svh w-[--sidebar-width] flex-col border-r border-gray-a4 text-gray-12 transition-transform duration-200 ease-linear md:hidden",
+							openMobile ? "translate-x-0" : "-translate-x-full"
+						)}
+						style={{ 
+							backgroundColor: 'rgb(10, 10, 10)',
+							backdropFilter: 'none'
+						}}
+					>
+						{children}
+					</div>
+				</>
 			);
 		}
 
@@ -242,9 +268,13 @@ const Sidebar = React.forwardRef<
 				<div
 					data-state={openMobile ? "open" : "closed"}
 					className={cn(
-						"fixed inset-y-0 z-50 flex h-svh w-[--sidebar-width] flex-col bg-gray-a1 border-r border-gray-a4 text-gray-12 transition-transform duration-200 ease-linear md:hidden",
+						"fixed inset-y-0 z-50 flex h-svh w-[--sidebar-width] flex-col border-r border-gray-a4 text-gray-12 transition-transform duration-200 ease-linear md:hidden",
 						openMobile ? "translate-x-0" : "-translate-x-full"
 					)}
+					style={{ 
+						backgroundColor: 'rgb(10, 10, 10)',
+						backdropFilter: 'none'
+					}}
 				>
 					{children}
 				</div>
@@ -258,7 +288,7 @@ const SidebarTrigger = React.forwardRef<
 	React.ElementRef<typeof Slot>,
 	React.ComponentProps<typeof Slot>
 >(({ className, onClick, ...props }, ref) => {
-	const { toggleSidebar } = useSidebar();
+	const { toggleSidebar, setOpenMobile, openMobile } = useSidebar();
 
 	return (
 		<Slot
@@ -266,7 +296,12 @@ const SidebarTrigger = React.forwardRef<
 			className={cn("cursor-pointer", className)}
 			onClick={(event) => {
 				onClick?.(event);
-				toggleSidebar();
+				// On mobile, toggle mobile sidebar; on desktop, toggle desktop sidebar
+				if (typeof window !== 'undefined' && window.innerWidth < 768) {
+					setOpenMobile(!openMobile);
+				} else {
+					toggleSidebar();
+				}
 			}}
 			{...props}
 		>

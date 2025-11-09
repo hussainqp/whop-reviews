@@ -12,6 +12,7 @@ import {
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
+	useSidebar,
 } from "@/components/ui/sidebar";
 import { Home, FileText, BarChart3, CreditCard, Eye } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -20,6 +21,8 @@ export function SidebarNavigation() {
 	const pathname = usePathname();
 	const [isOnboarding, setIsOnboarding] = useState(false);
 	const [mounted, setMounted] = useState(false);
+	const { setOpenMobile } = useSidebar();
+	const [isMobile, setIsMobile] = useState(false);
 
 	// Check for onboarding attribute
 	useEffect(() => {
@@ -38,6 +41,16 @@ export function SidebarNavigation() {
 		});
 		
 		return () => observer.disconnect();
+	}, []);
+
+	// Detect if we're on mobile
+	useEffect(() => {
+		const checkMobile = () => {
+			setIsMobile(window.innerWidth < 768);
+		};
+		checkMobile();
+		window.addEventListener('resize', checkMobile);
+		return () => window.removeEventListener('resize', checkMobile);
 	}, []);
 
 	// Extract companyId from pathname if we're in dashboard routes
@@ -92,6 +105,13 @@ export function SidebarNavigation() {
 		},
 	];
 
+	// Close mobile sidebar when link is clicked
+	const handleLinkClick = () => {
+		if (isMobile) {
+			setOpenMobile(false);
+		}
+	};
+
 	return (
 		<Sidebar collapsible="none">
 			<SidebarContent>
@@ -107,7 +127,7 @@ export function SidebarNavigation() {
 											item.isActive && "bg-gray-a4 text-gray-12"
 										)}
 									>
-										<Link href={item.url}>
+										<Link href={item.url} onClick={handleLinkClick}>
 											<item.icon />
 											<span className="ml-2 whitespace-nowrap">{item.title}</span>
 										</Link>

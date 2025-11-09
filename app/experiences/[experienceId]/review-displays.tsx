@@ -2,13 +2,13 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
-import { PlayCircle, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { PlayCircle, Star } from 'lucide-react';
 import { ReviewDetailDialog } from './review-detail-dialog';
 import type { ApprovedReview } from './types';
 
 interface ReviewDisplayProps {
 	reviews: ApprovedReview[];
-	format: 'grid' | 'carousel' | 'list' | 'cards';
+	format: 'grid' | 'list' | 'cards';
 }
 
 // Grid Layout (Original)
@@ -56,7 +56,7 @@ export function GridDisplay({ reviews }: { reviews: ApprovedReview[] }) {
 		<>
 			<div
 				ref={gridRef}
-				className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 auto-rows-auto"
+				className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 auto-rows-auto gap-3 sm:gap-4"
 			>
 				{reviews.map((review, index) => {
 					const parallaxOffset = getParallaxOffset(index);
@@ -142,124 +142,21 @@ export function GridDisplay({ reviews }: { reviews: ApprovedReview[] }) {
 	);
 }
 
-// Carousel Layout
-export function CarouselDisplay({ reviews }: { reviews: ApprovedReview[] }) {
-	const [selectedReview, setSelectedReview] = useState<ApprovedReview | null>(null);
-	const [currentIndex, setCurrentIndex] = useState(0);
-	const scrollContainerRef = useRef<HTMLDivElement>(null);
-
-	const scroll = (direction: 'left' | 'right') => {
-		if (!scrollContainerRef.current) return;
-		const cardWidth = 320; // Approximate card width + gap
-		const scrollAmount = direction === 'left' ? -cardWidth : cardWidth;
-		scrollContainerRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
-	};
-
-	return (
-		<>
-			<div className="relative">
-				<button
-					onClick={() => scroll('left')}
-					className="absolute left-0 top-1/2 -translate-y-1/2 z-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-2 hover:bg-white/20 transition-colors"
-					aria-label="Previous reviews"
-				>
-					<ChevronLeft className="h-6 w-6 text-white" />
-				</button>
-				<div
-					ref={scrollContainerRef}
-					className="flex gap-4 overflow-x-auto scrollbar-hide scroll-smooth px-12 py-4"
-					style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
-				>
-					{reviews.map((review) => (
-						<div
-							key={review.id}
-							className="flex-shrink-0 w-80 rounded-2xl border border-gray-a4 bg-gray-a2/80 backdrop-blur-sm overflow-hidden hover:shadow-2xl transition-all cursor-pointer"
-							onClick={() => setSelectedReview(review)}
-						>
-							{review.fileUrl && (
-								<div className="relative w-full h-64 overflow-hidden bg-gray-a3">
-									{review.fileType === 'photo' ? (
-										<Image
-											src={review.fileUrl}
-											alt={`Review by ${review.customerName}`}
-											fill
-											className="object-cover"
-										/>
-									) : (
-										<div className="relative w-full h-full">
-											<video
-												src={review.fileUrl}
-												className="h-full w-full object-cover"
-												preload="metadata"
-											/>
-											<div className="absolute inset-0 flex items-center justify-center bg-black/20">
-												<div className="rounded-full bg-black/60 p-2">
-													<PlayCircle className="h-8 w-8 text-white" />
-												</div>
-											</div>
-										</div>
-									)}
-								</div>
-							)}
-							<div className="p-4 bg-green-600/90">
-								<div className="flex items-center justify-between mb-2">
-									<p className="text-white font-semibold">{review.customerName}</p>
-									{review.rating && (
-										<div className="flex items-center gap-1">
-											{[...Array(5)].map((_, i) => (
-												<Star
-													key={i}
-													className={`h-4 w-4 ${
-														i < review.rating!
-															? 'text-white fill-white'
-															: 'text-white/30 fill-white/30'
-													}`}
-												/>
-											))}
-										</div>
-									)}
-								</div>
-								{review.comment && (
-									<p className="text-sm text-white/90 line-clamp-3">{review.comment}</p>
-								)}
-							</div>
-						</div>
-					))}
-				</div>
-				<button
-					onClick={() => scroll('right')}
-					className="absolute right-0 top-1/2 -translate-y-1/2 z-10 bg-white/10 backdrop-blur-lg border border-white/20 rounded-full p-2 hover:bg-white/20 transition-colors"
-					aria-label="Next reviews"
-				>
-					<ChevronRight className="h-6 w-6 text-white" />
-				</button>
-			</div>
-			{selectedReview && (
-				<ReviewDetailDialog
-					review={selectedReview}
-					open={!!selectedReview}
-					onOpenChange={(open: boolean) => !open && setSelectedReview(null)}
-				/>
-			)}
-		</>
-	);
-}
-
 // List Layout
 export function ListDisplay({ reviews }: { reviews: ApprovedReview[] }) {
 	const [selectedReview, setSelectedReview] = useState<ApprovedReview | null>(null);
 
 	return (
 		<>
-			<div className="space-y-4">
+			<div className="space-y-3 sm:space-y-4">
 				{reviews.map((review) => (
 					<div
 						key={review.id}
-						className="flex gap-4 p-4 rounded-lg border border-gray-a4 bg-gray-a2/80 backdrop-blur-sm hover:shadow-lg transition-all cursor-pointer"
+						className="flex flex-col sm:flex-row gap-3 sm:gap-4 p-3 sm:p-4 rounded-lg border border-gray-a4 bg-gray-a2/80 backdrop-blur-sm hover:shadow-lg transition-all cursor-pointer"
 						onClick={() => setSelectedReview(review)}
 					>
 						{review.fileUrl && (
-							<div className="relative w-24 h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-a3">
+							<div className="relative w-full sm:w-24 h-48 sm:h-24 flex-shrink-0 rounded-lg overflow-hidden bg-gray-a3">
 								{review.fileType === 'photo' ? (
 									<Image
 										src={review.fileUrl}
@@ -282,15 +179,15 @@ export function ListDisplay({ reviews }: { reviews: ApprovedReview[] }) {
 							</div>
 						)}
 						<div className="flex-1 min-w-0">
-							<div className="flex items-center justify-between mb-2">
-								<p className="font-semibold text-gray-12">{review.customerName}</p>
+							<div className="flex items-center justify-between mb-2 flex-wrap gap-2">
+								<p className="font-semibold text-gray-12 text-sm sm:text-base">{review.customerName}</p>
 								{review.rating && (
-									<div className="flex items-center gap-1">
+									<div className="flex items-center gap-0.5 sm:gap-1">
 										{[...Array(5)].map((_, i) => (
 											<Star
 												key={i}
 												fill={i < review.rating! ? 'currentColor' : 'none'}
-												className={`h-4 w-4 ${
+												className={`h-3 w-3 sm:h-4 sm:w-4 ${
 													i < review.rating!
 														? 'text-yellow-600'
 														: 'text-gray-300'
@@ -301,9 +198,9 @@ export function ListDisplay({ reviews }: { reviews: ApprovedReview[] }) {
 								)}
 							</div>
 							{review.comment && (
-								<p className="text-sm text-gray-10 line-clamp-2">{review.comment}</p>
+								<p className="text-xs sm:text-sm text-gray-10 line-clamp-2">{review.comment}</p>
 							)}
-							<p className="text-xs text-gray-10 mt-1">{review.productName}</p>
+							<p className="text-xs sm:text-sm text-gray-10 mt-1">{review.productName}</p>
 						</div>
 					</div>
 				))}
@@ -325,7 +222,7 @@ export function CardsDisplay({ reviews }: { reviews: ApprovedReview[] }) {
 
 	return (
 		<>
-			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+			<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 lg:gap-6">
 				{reviews.map((review) => (
 					<div
 						key={review.id}
@@ -374,19 +271,19 @@ export function CardsDisplay({ reviews }: { reviews: ApprovedReview[] }) {
 								</div>
 							</div>
 						)}
-						<div className="p-4">
-							<div className="flex items-center justify-between mb-1">
-								<p className="font-bold text-gray-12">{review.customerName}</p>
+						<div className="p-3 sm:p-4">
+							<div className="flex items-center justify-between mb-1 flex-wrap gap-2">
+								<p className="font-bold text-gray-12 text-sm sm:text-base">{review.customerName}</p>
 								{review.rating && (
 									<div className="flex items-center gap-1">
-										<Star className="h-4 w-4 text-yellow-600 fill-yellow-600" />
-										<span className="text-sm text-gray-10">{review.rating}</span>
+										<Star className="h-3 w-3 sm:h-4 sm:w-4 text-yellow-600 fill-yellow-600" />
+										<span className="text-xs sm:text-sm text-gray-10">{review.rating}</span>
 									</div>
 								)}
 							</div>
-							<p className="text-sm text-gray-10 mb-2">{review.productName}</p>
+							<p className="text-xs sm:text-sm text-gray-10 mb-2">{review.productName}</p>
 							{review.comment && (
-								<p className="text-sm text-gray-10 line-clamp-3">{review.comment}</p>
+								<p className="text-xs sm:text-sm text-gray-10 line-clamp-2 sm:line-clamp-3">{review.comment}</p>
 							)}
 						</div>
 					</div>
@@ -419,8 +316,6 @@ export function ReviewDisplay({ reviews, format }: ReviewDisplayProps) {
 	}
 
 	switch (format) {
-		case 'carousel':
-			return <CarouselDisplay reviews={reviews} />;
 		case 'list':
 			return <ListDisplay reviews={reviews} />;
 		case 'cards':

@@ -31,12 +31,14 @@ export default async function ExperiencesPage({
 
 	// Fetch approved reviews and merchant settings
 	let approvedReviews: ApprovedReview[] = [];
-	let displayFormat: 'grid' | 'carousel' | 'list' | 'cards' = 'grid';
+	let displayFormat: 'grid' | 'list' | 'cards' = 'grid';
 	
 	try {
 		approvedReviews = await getApprovedReviewsByExperience(companyId, true);
 		if (existing?.reviewDisplayFormat) {
-			displayFormat = existing.reviewDisplayFormat as 'grid' | 'carousel' | 'list' | 'cards';
+			const format = existing.reviewDisplayFormat as 'grid' | 'list' | 'cards';
+			// Fallback to 'grid' if format is 'carousel' (legacy)
+			displayFormat = format === 'carousel' ? 'grid' : format;
 		}
 	} catch (error) {
 		// If merchant not found or other error, show empty state
@@ -44,11 +46,11 @@ export default async function ExperiencesPage({
 	}
 
 	return (
-		<div className="flex flex-col p-8 gap-6">
+		<div className="flex flex-col p-4 sm:p-6 lg:p-8 gap-6">
 			{/* Header */}
 			<div>
-				<h1 className="text-9 font-bold text-gray-12 mb-2">Hall Of Reviews</h1>
-				<p className="text-3 text-gray-10">Preview and customize how reviews are displayed to your customers</p>
+				<h1 className="text-6 sm:text-7 lg:text-9 font-bold text-gray-12 mb-2">Hall Of Reviews</h1>
+				<p className="text-sm sm:text-base lg:text-3 text-gray-10">Preview and customize how reviews are displayed to your customers</p>
 			</div>
 
 			<PreviewSection reviews={approvedReviews} initialFormat={displayFormat} companyId={companyId} />

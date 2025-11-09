@@ -3,10 +3,10 @@
 import { useState } from 'react';
 import { updateReviewDisplayFormat } from '@/app/actions/company';
 import { Button } from '@whop/react/components';
-import { Grid3x3, LayoutGrid, List, SquareStack } from 'lucide-react';
+import { Grid3x3, List, SquareStack } from 'lucide-react';
 import { useToast } from '@/components/ui/toast-provider';
 
-type DisplayFormat = 'grid' | 'carousel' | 'list' | 'cards';
+type DisplayFormat = 'grid' | 'list' | 'cards';
 
 interface DisplaySettingsProps {
 	companyId: string;
@@ -20,12 +20,6 @@ const formatOptions: { value: DisplayFormat; label: string; icon: React.ReactNod
 		label: 'Grid',
 		icon: <Grid3x3 className="h-5 w-5" />,
 		description: 'Masonry grid layout with parallax effects',
-	},
-	{
-		value: 'carousel',
-		label: 'Carousel',
-		icon: <LayoutGrid className="h-5 w-5" />,
-		description: 'Horizontal scrollable carousel',
 	},
 	{
 		value: 'list',
@@ -70,15 +64,15 @@ export function DisplaySettings({ companyId, currentFormat, onFormatChange }: Di
 	};
 
 	return (
-		<div className="rounded-lg border border-gray-a4 bg-gray-a2 p-6">
+		<div className="rounded-lg border border-gray-a4 bg-gray-a2 p-4 sm:p-6">
 			<div className="mb-4">
-				<h3 className="text-6 font-semibold text-gray-12 mb-2">Review Display Format</h3>
-				<p className="text-sm text-gray-10">
+				<h3 className="text-4 sm:text-5 lg:text-6 font-semibold text-gray-12 mb-2">Review Display Format</h3>
+				<p className="text-xs sm:text-sm text-gray-10">
 					Choose how reviews are displayed on your public experience page
 				</p>
 			</div>
 
-			<div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+			<div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
 				{formatOptions.map((option) => (
 					<button
 						key={option.value}

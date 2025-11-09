@@ -14,13 +14,15 @@ export default async function ExperiencePage({
 
 	// Fetch approved reviews and merchant settings
 	let approvedReviews: ApprovedReview[] = [];
-	let displayFormat: 'grid' | 'carousel' | 'list' | 'cards' = 'grid';
+	let displayFormat: 'grid' | 'list' | 'cards' = 'grid';
 	
 	try {
 		// Get merchant first to get display format
 		const merchant = await getExperienceDataFromDBPublic(experienceId);
 		if (merchant?.reviewDisplayFormat) {
-			displayFormat = merchant.reviewDisplayFormat as 'grid' | 'carousel' | 'list' | 'cards';
+			const format = merchant.reviewDisplayFormat as 'grid' | 'list' | 'cards';
+			// Fallback to 'grid' if format is 'carousel' (legacy)
+			displayFormat = format === 'carousel' ? 'grid' : format;
 		}
 		
 		// Then fetch reviews
@@ -49,17 +51,17 @@ export default async function ExperiencePage({
 			</div> */}
 
 			{/* Hall of Fame Section */}
-			<div className="px-8 pb-16 pt-8">
+			<div className="px-4 sm:px-6 lg:px-8 pb-12 sm:pb-16 pt-6 sm:pt-8">
 				{/* Hall of Fame Header */}
-				<div className="mb-12 text-center">
-					<div className="inline-flex items-center gap-3 mb-4">
-						<Trophy className="h-8 w-8 text-yellow-600" />
-						<h2 className="text-7 font-bold bg-gradient-to-r from-gray-12 to-gray-10 bg-clip-text text-transparent">
+				<div className="mb-8 sm:mb-12 text-center">
+					<div className="inline-flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+						<Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
+						<h2 className="text-5 sm:text-6 lg:text-7 font-bold bg-gradient-to-r from-gray-12 to-gray-10 bg-clip-text text-transparent">
 							Hall of Reviews
 						</h2>
-						<Trophy className="h-8 w-8 text-yellow-600" />
+						<Trophy className="h-6 w-6 sm:h-8 sm:w-8 text-yellow-600" />
 					</div>
-					<p className="text-4 text-gray-10 max-w-2xl mx-auto">
+					<p className="text-sm sm:text-base lg:text-4 text-gray-10 max-w-2xl mx-auto px-4">
 						Showcasing authentic reviews from our amazing customers
 					</p>
 				</div>

@@ -40,25 +40,25 @@ interface AnalyticsDashboardProps {
 
 export function AnalyticsDashboard({ stats, companyId, reviews }: AnalyticsDashboardProps) {
 	return (
-		<div className="flex flex-col p-8 gap-4">
+		<div className="flex flex-col p-4 sm:p-6 lg:p-8 gap-4">
 			{/* Header */}
-			<div className="flex justify-between items-center">
+			<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
 				<div>
-					<h1 className="text-9 font-bold text-gray-12">Analytics</h1>
-					<p className="text-3 text-gray-10">Review your review campaign performance</p>
+					<h1 className="text-6 sm:text-7 lg:text-9 font-bold text-gray-12">Analytics</h1>
+					<p className="text-sm sm:text-base lg:text-3 text-gray-10">Review your review campaign performance</p>
 				</div>
 			</div>
 
 			{/* Monthly Usage Section */}
-			<div className="rounded-lg border border-gray-a4 bg-gray-a2 p-6 transition-all hover:shadow-md">
+			<div className="rounded-lg border border-gray-a4 bg-gray-a2 p-4 sm:p-6 transition-all hover:shadow-md">
 				<div className="flex flex-col items-center justify-center gap-2">
 					<div className="flex items-center gap-2">
-						<TrendingUp className="h-5 w-5 text-gray-10" />
-						<h2 className="text-6 font-semibold text-gray-12">Credit Usage</h2>
+						<TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-gray-10" />
+						<h2 className="text-4 sm:text-5 lg:text-6 font-semibold text-gray-12">Credit Usage</h2>
 					</div>
 					<div className="text-center">
-					<p className={`text-4xl font-bold leading-none pr-3 text-gray-12`} style={{ fontSize: '2.5rem' }}>{stats.creditBalance}</p>
-						<div className="text-sm text-gray-10">credits remaining</div>
+					<p className={`text-2xl sm:text-3xl lg:text-4xl font-bold leading-none pr-3 text-gray-12`}>{stats.creditBalance}</p>
+						<div className="text-xs sm:text-sm text-gray-10">credits remaining</div>
 					</div>
 				</div>
 				{/* <div className="space-y-2">
@@ -132,8 +132,8 @@ export function AnalyticsDashboard({ stats, companyId, reviews }: AnalyticsDashb
 			</div>
 
 			{/* Reviews Table */}
-			<div className="mt-8">
-				<h2 className="text-6 font-semibold text-gray-12 mb-4">All Reviews</h2>
+			<div className="mt-4 sm:mt-8">
+				<h2 className="text-4 sm:text-5 lg:text-6 font-semibold text-gray-12 mb-4">All Reviews</h2>
 				<ReviewsTable data={reviews} />
 			</div>
 
@@ -150,12 +150,12 @@ interface StatCardProps {
 
 function StatCard({ icon, label, value, color }: StatCardProps) {
 	return (
-		<div className="rounded-lg border border-gray-a4 bg-gray-a2 p-3 flex items-center justify-between min-h-[80px] transition-all hover:border-gray-a6 hover:shadow-md">
+		<div className="rounded-lg border border-gray-a4 bg-gray-a2 p-3 sm:p-4 flex items-center justify-between min-h-[70px] sm:min-h-[80px] transition-all hover:border-gray-a6 hover:shadow-md">
 			<div className="flex flex-col gap-1">
 				<div className="text-gray-10">{icon}</div>
-				<p className="text-xs text-gray-10">{label}</p>
+				<p className="text-xs sm:text-sm text-gray-10">{label}</p>
 			</div>
-			<p className={`text-4xl font-bold leading-none pr-3 ${color}`} style={{ fontSize: '2.5rem' }}>{value.toLocaleString()}</p>
+			<p className={`text-2xl sm:text-3xl lg:text-4xl font-bold leading-none pr-2 sm:pr-3 ${color}`}>{value.toLocaleString()}</p>
 		</div>
 	);
 }

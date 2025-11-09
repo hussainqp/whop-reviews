@@ -30,7 +30,7 @@ export const merchants = pgTable('merchants', {
 	
 	// Review display settings
 	reviewDisplayFormat: text('review_display_format', { 
-		enum: ['grid', 'carousel', 'list', 'cards'] 
+		enum: ['grid', 'list', 'cards'] 
 	}).notNull().default('grid'),
 	
 	...timestamps,

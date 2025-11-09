@@ -46,19 +46,19 @@ export default async function DashboardPage({
 	const displayName = user.name || `@${user.username}`;
 
 	return (
-		<div className="flex flex-col p-8 gap-4">
-			<div className="flex justify-between items-center gap-4">
-				<h1 className="text-9">
+		<div className="flex flex-col p-4 sm:p-6 lg:p-8 gap-4">
+			<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+				<h1 className="text-6 sm:text-7 lg:text-9">
 					Hi <strong>{displayName}</strong>!
 				</h1>
 				<SyncButton companyId={companyId} />
 			</div>
 
-			<p className="text-3 text-gray-10">
+			<p className="text-sm sm:text-base lg:text-3 text-gray-10">
 				Welcome to your whop app! Manage your products and review campaigns below.
 			</p>
 
-			<h3 className="text-6 font-bold">Products</h3>
+			<h3 className="text-4 sm:text-5 lg:text-6 font-bold">Products</h3>
 			<ProductsTable data={productConfigs} companyId={companyId} />
 		</div>
 	);

@@ -47,18 +47,18 @@ export function BillingDashboard({ merchantId }: BillingDashboardProps) {
 	];
 
 	return (
-		<div className="flex flex-col p-8 gap-6">
+		<div className="flex flex-col p-4 sm:p-6 lg:p-8 gap-6">
 			{/* Header */}
-			<div className="flex justify-between items-center">
+			<div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
 				<div>
-					<h1 className="text-9 font-bold">Billing</h1>
-					<p className="text-3 text-gray-10">Buy credits to send review invites</p>
+					<h1 className="text-6 sm:text-7 lg:text-9 font-bold">Billing</h1>
+					<p className="text-sm sm:text-base lg:text-3 text-gray-10">Buy credits to send review invites</p>
 				</div>
 			</div>
 
 			{/* Available Credit Packages */}
 			<div className="space-y-4">
-				<h2 className="text-6 font-semibold text-gray-12">Buy Credits</h2>
+				<h2 className="text-4 sm:text-5 lg:text-6 font-semibold text-gray-12">Buy Credits</h2>
 				<div className="grid grid-cols-1 md:grid-cols-3 gap-4">
 					{creditPackages.map((pkg) => (
 						<CreditPackageCard key={pkg.id} package={pkg} merchantId={merchantId} />

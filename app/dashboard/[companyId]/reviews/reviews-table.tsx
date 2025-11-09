@@ -13,22 +13,8 @@ import {
 import { ArrowUpDown } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@whop/react/components";
-
-type Review = {
-	id: string;
-	customerName: string;
-	customerEmail: string | null;
-	fileUrl: string | null;
-	fileType: 'photo' | 'video' | null;
-	comment: string | null;
-	rating: number | null;
-	status: 'pending_submission' | 'pending_approval' | 'approved' | 'rejected';
-	createdAt: string | null;
-	submittedAt: string | null;
-	approvedAt: string | null;
-	rejectedAt: string | null;
-	productName: string;
-};
+import { ReviewDetailDialog } from "./review-detail-dialog";
+import type { Review } from "./types";
 
 export const columns: ColumnDef<Review>[] = [
 	{
@@ -127,20 +113,20 @@ export const columns: ColumnDef<Review>[] = [
 		},
 	},
 	{
-		accessorKey: "createdAt",
+		accessorKey: "submittedAt",
 		header: ({ column }) => {
 			return (
 				<button
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 					className="hidden md:flex items-center gap-1 sm:gap-2 hover:opacity-80 transition-opacity text-xs sm:text-sm"
 				>
-					<span className="whitespace-nowrap">Created</span>
+					<span className="whitespace-nowrap">Submitted</span>
 					<ArrowUpDown className="h-3 w-3 sm:h-4 sm:w-4" />
 				</button>
 			);
 		},
 		cell: ({ row }) => {
-			const date = row.getValue("createdAt") as string | null;
+			const date = row.getValue("submittedAt") as string | null;
 			return date ? (
 				<span className="text-xs sm:text-sm whitespace-nowrap hidden md:inline">{new Date(date).toLocaleDateString()}</span>
 			) : (
@@ -152,15 +138,17 @@ export const columns: ColumnDef<Review>[] = [
 
 interface ReviewsTableProps {
 	data: Review[];
+	status: 'pending_approval' | 'approved' | 'rejected';
 }
 
-export function ReviewsTable({ data }: ReviewsTableProps) {
+export function ReviewsTable({ data, status }: ReviewsTableProps) {
 	const [sorting, setSorting] = React.useState<SortingState>([
 		{
-			id: "createdAt",
+			id: "submittedAt",
 			desc: true, // Default to descending (newest first)
 		},
 	]);
+	const [selectedReview, setSelectedReview] = React.useState<Review | null>(null);
 
 	const table = useReactTable({
 		data,
@@ -179,58 +167,56 @@ export function ReviewsTable({ data }: ReviewsTableProps) {
 		},
 	});
 
+	const handleRowClick = (review: Review) => {
+		setSelectedReview(review);
+	};
+
 	return (
-		<div className="w-full">
-			<div className="overflow-x-auto -mx-4 sm:mx-0 md:mx-0">
-				<div className="flex justify-center md:justify-start md:w-full">
-					<div className="rounded-md border border-gray-a4 min-w-[400px] sm:min-w-[600px] md:min-w-0 md:w-full">
-				<Table className="w-full">
-					<TableHeader>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => (
-									<TableHead 
-										key={header.id}
-										className={header.id === "rating" || header.id === "fileType" || header.id === "createdAt" ? "hidden md:table-cell" : ""}
-									>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext()
-												)}
-									</TableHead>
-								))}
-							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									data-state={row.getIsSelected() && "selected"}
-								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell 
-											key={cell.id}
-											className={cell.column.id === "rating" || cell.column.id === "fileType" || cell.column.id === "createdAt" ? "hidden md:table-cell" : ""}
-										>
-											{flexRender(cell.column.columnDef.cell, cell.getContext())}
-										</TableCell>
+		<>
+			<div className="w-full overflow-x-auto -mx-4 sm:mx-0">
+				<div className="rounded-md border border-gray-a4 min-w-[400px] sm:min-w-[600px]">
+					<Table>
+						<TableHeader>
+							{table.getHeaderGroups().map((headerGroup) => (
+								<TableRow key={headerGroup.id}>
+									{headerGroup.headers.map((header) => (
+										<TableHead key={header.id}>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext()
+													)}
+										</TableHead>
 									))}
 								</TableRow>
-							))
-						) : (
-							<TableRow>
-								<TableCell colSpan={columns.length} className="h-24 text-center">
-									No reviews found.
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
-					</div>
+							))}
+						</TableHeader>
+						<TableBody>
+							{table.getRowModel().rows?.length ? (
+								table.getRowModel().rows.map((row) => (
+									<TableRow
+										key={row.id}
+										data-state={row.getIsSelected() && "selected"}
+										onClick={() => handleRowClick(row.original)}
+										className="cursor-pointer hover:bg-gray-a3 transition-colors"
+									>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell key={cell.id}>
+												{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											</TableCell>
+										))}
+									</TableRow>
+								))
+							) : (
+								<TableRow>
+									<TableCell colSpan={columns.length} className="h-24 text-center">
+										No reviews found.
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
 				</div>
 			</div>
 			<div className="flex flex-col sm:flex-row items-center justify-between px-2 py-4 gap-4">
@@ -260,7 +246,16 @@ export function ReviewsTable({ data }: ReviewsTableProps) {
 					</Button>
 				</div>
 			</div>
-		</div>
+
+			{selectedReview && (
+				<ReviewDetailDialog
+					review={selectedReview}
+					open={!!selectedReview}
+					onOpenChange={(open: boolean) => !open && setSelectedReview(null)}
+					status={status}
+				/>
+			)}
+		</>
 	);
 }
 
