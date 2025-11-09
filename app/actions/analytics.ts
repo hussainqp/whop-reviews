@@ -3,7 +3,7 @@
 import { cache } from 'react';
 import db from '@/lib/db';
 import { reviews, merchants, productConfigs, processedEvents, emailLogs } from '@/lib/db/schema';
-import { eq, and, sql, count } from 'drizzle-orm';
+import { eq, and, sql, count, desc } from 'drizzle-orm';
 import { getCompanyDataFromDB } from './company';
 import { verifyUser } from './authentication';
 
@@ -92,6 +92,29 @@ export async function getAnalyticsStats(companyId: string) {
 	} catch (err: unknown) {
 		console.error('[GET ANALYTICS STATS] Error while fetching analytics stats:', err);
 		throw new Error("Failed to fetch analytics stats");
+	}
+}
+
+export async function getEmailLogs(companyId: string) {
+	try {
+		await verifyUser(companyId);
+		const merchant = await getCompanyDataFromDB(companyId);
+		if (!merchant) {
+			throw new Error('Merchant not found');
+		}
+
+		// Get all email logs ordered by createdAt descending
+		const logs = await db
+			.select()
+			.from(emailLogs)
+			.where(eq(emailLogs.merchantId, merchant.id))
+			.orderBy(desc(emailLogs.createdAt))
+			.limit(1000); // Limit to most recent 1000 logs
+
+		return logs;
+	} catch (err: unknown) {
+		console.error('[GET EMAIL LOGS] Error while fetching email logs:', err);
+		throw new Error("Failed to fetch email logs");
 	}
 }
 

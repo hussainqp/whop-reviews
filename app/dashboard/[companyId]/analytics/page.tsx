@@ -1,7 +1,7 @@
 import { headers } from 'next/headers';
 import { whopsdk } from '@/lib/whop-sdk';
 import { getCompanyDataFromDB } from '@/app/actions/company';
-import { getAnalyticsStats } from '@/app/actions/analytics';
+import { getAnalyticsStats, getEmailLogs } from '@/app/actions/analytics';
 import { getAllReviews } from '@/app/actions/reviews';
 import { AnalyticsDashboard } from './analytics-dashboard';
 
@@ -29,12 +29,13 @@ export default async function AnalyticsPage({
 		);
 	}
 
-	// Fetch analytics stats and all reviews
-	const [stats, allReviews] = await Promise.all([
+	// Fetch analytics stats, all reviews, and email logs
+	const [stats, allReviews, emailLogs] = await Promise.all([
 		getAnalyticsStats(companyId),
 		getAllReviews(companyId),
+		getEmailLogs(companyId),
 	]);
 
-	return <AnalyticsDashboard stats={stats} companyId={companyId} reviews={allReviews} />;
+	return <AnalyticsDashboard stats={stats} companyId={companyId} reviews={allReviews} emailLogs={emailLogs} />;
 }
 

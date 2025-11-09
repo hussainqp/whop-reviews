@@ -2,6 +2,7 @@
 
 import { Mail, CheckCircle2, Clock, XCircle, Star, TrendingUp } from 'lucide-react';
 import { ReviewsTable } from './reviews-table';
+import { EmailLogsTable } from './email-logs-table';
 
 interface AnalyticsStats {
 	totalEmailsSent: number;
@@ -32,13 +33,25 @@ type Review = {
 	productName: string;
 };
 
+type EmailLog = {
+	id: string;
+	emailType: 'review_request' | 'reward_delivery' | 'review_rejection';
+	recipient: string;
+	subject: string | null;
+	status: 'sent' | 'failed' | 'bounced' | 'delivered' | 'opened' | 'clicked';
+	errorMessage: string | null;
+	createdAt: string | Date | null;
+	reviewId: string | null;
+};
+
 interface AnalyticsDashboardProps {
 	stats: AnalyticsStats;
 	companyId: string;
 	reviews: Review[];
+	emailLogs: EmailLog[];
 }
 
-export function AnalyticsDashboard({ stats, companyId, reviews }: AnalyticsDashboardProps) {
+export function AnalyticsDashboard({ stats, companyId, reviews, emailLogs }: AnalyticsDashboardProps) {
 	return (
 		<div className="flex flex-col p-4 sm:p-6 lg:p-8 gap-4">
 			{/* Header */}
@@ -135,6 +148,15 @@ export function AnalyticsDashboard({ stats, companyId, reviews }: AnalyticsDashb
 			<div className="mt-4 sm:mt-8">
 				<h2 className="text-4 sm:text-5 lg:text-6 font-semibold text-gray-12 mb-4">All Reviews</h2>
 				<ReviewsTable data={reviews} />
+			</div>
+
+			{/* Email Logs Table */}
+			<div className="mt-4 sm:mt-8">
+				<h2 className="text-4 sm:text-5 lg:text-6 font-semibold text-gray-12 mb-4">Email Logs</h2>
+				<p className="text-xs sm:text-sm text-gray-10 mb-4">
+					Track all email activity including sent, delivered, failed, and bounced emails
+				</p>
+				<EmailLogsTable data={emailLogs} />
 			</div>
 
 		</div>
