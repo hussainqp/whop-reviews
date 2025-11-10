@@ -69,7 +69,7 @@ export function EmailLogDetailDialog({ emailLog, open, onOpenChange }: EmailLogD
 		return new Date(date).toLocaleString();
 	};
 
-	const formatMetadata = (metadata: unknown) => {
+	const formatMetadata = (metadata: unknown): string => {
 		if (!metadata) return 'N/A';
 		if (typeof metadata === 'object') {
 			return JSON.stringify(metadata, null, 2);
@@ -88,25 +88,21 @@ export function EmailLogDetailDialog({ emailLog, open, onOpenChange }: EmailLogD
 				</DialogHeader>
 
 				<div className="space-y-4 py-4">
-					{/* Recipient */}
 					<div className="grid gap-2">
 						<Label className="text-sm font-semibold">Recipient</Label>
 						<div className="text-sm text-gray-12">{emailLog.recipient}</div>
 					</div>
 
-					{/* Email Type */}
 					<div className="grid gap-2">
 						<Label className="text-sm font-semibold">Email Type</Label>
 						<div className="text-sm text-gray-12">{getEmailTypeLabel(emailLog.emailType)}</div>
 					</div>
 
-					{/* Subject */}
 					<div className="grid gap-2">
 						<Label className="text-sm font-semibold">Subject</Label>
 						<div className="text-sm text-gray-12">{emailLog.subject || 'N/A'}</div>
 					</div>
 
-					{/* Status */}
 					<div className="grid gap-2">
 						<Label className="text-sm font-semibold">Status</Label>
 						<div className={`text-sm font-medium ${getStatusColor(emailLog.status)}`}>
@@ -114,49 +110,43 @@ export function EmailLogDetailDialog({ emailLog, open, onOpenChange }: EmailLogD
 						</div>
 					</div>
 
-					{/* Error Message (if failed) */}
-					{emailLog.errorMessage && (
+					{emailLog.errorMessage ? (
 						<div className="grid gap-2">
 							<Label className="text-sm font-semibold text-red-600">Error Message</Label>
 							<div className="text-sm text-red-600 bg-red-a2 border border-red-a4 p-3 rounded-md whitespace-pre-wrap break-words">
 								{emailLog.errorMessage}
 							</div>
 						</div>
-					)}
+					) : null}
 
-					{/* SendGrid Message ID */}
-					{emailLog.sendgridMessageId && (
+					{emailLog.sendgridMessageId ? (
 						<div className="grid gap-2">
 							<Label className="text-sm font-semibold">SendGrid Message ID</Label>
 							<div className="text-sm text-gray-12 font-mono break-all">{emailLog.sendgridMessageId}</div>
 						</div>
-					)}
+					) : null}
 
-					{/* Review ID */}
-					{emailLog.reviewId && (
+					{emailLog.reviewId ? (
 						<div className="grid gap-2">
 							<Label className="text-sm font-semibold">Review ID</Label>
 							<div className="text-sm text-gray-12 font-mono break-all">{emailLog.reviewId}</div>
 						</div>
-					)}
+					) : null}
 
-					{/* Created At */}
 					<div className="grid gap-2">
 						<Label className="text-sm font-semibold">Sent At</Label>
 						<div className="text-sm text-gray-12">{formatDate(emailLog.createdAt)}</div>
 					</div>
 
-					{/* Metadata */}
-					{emailLog.metadata && (
+					{emailLog.metadata ? (
 						<div className="grid gap-2">
 							<Label className="text-sm font-semibold">Metadata</Label>
 							<div className="text-xs text-gray-12 bg-gray-a2 border border-gray-a4 p-3 rounded-md font-mono whitespace-pre-wrap break-words overflow-x-auto">
 								{formatMetadata(emailLog.metadata)}
 							</div>
 						</div>
-					)}
+					) : null}
 
-					{/* Email Log ID */}
 					<div className="grid gap-2">
 						<Label className="text-sm font-semibold">Email Log ID</Label>
 						<div className="text-xs text-gray-10 font-mono break-all">{emailLog.id}</div>
@@ -166,4 +156,3 @@ export function EmailLogDetailDialog({ emailLog, open, onOpenChange }: EmailLogD
 		</Dialog>
 	);
 }
-
