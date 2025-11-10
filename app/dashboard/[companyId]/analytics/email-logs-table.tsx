@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { useState } from "react";
 import {
 	ColumnDef,
 	flexRender,
@@ -13,6 +14,7 @@ import {
 import { ArrowUpDown } from "lucide-react";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@whop/react/components";
+import { EmailLogDetailDialog } from "./email-log-detail-dialog";
 
 type EmailLog = {
 	id: string;
@@ -171,6 +173,7 @@ export function EmailLogsTable({ data }: EmailLogsTableProps) {
 			desc: true, // Default to descending (newest first)
 		},
 	]);
+	const [selectedEmailLog, setSelectedEmailLog] = useState<EmailLog | null>(null);
 
 	const table = useReactTable({
 		data,
@@ -226,6 +229,8 @@ export function EmailLogsTable({ data }: EmailLogsTableProps) {
 										<TableRow
 											key={row.id}
 											data-state={row.getIsSelected() && "selected"}
+											onClick={() => setSelectedEmailLog(row.original)}
+											className="cursor-pointer hover:bg-gray-a3"
 										>
 											{row.getVisibleCells().map((cell) => (
 												<TableCell
@@ -282,6 +287,14 @@ export function EmailLogsTable({ data }: EmailLogsTableProps) {
 					</Button>
 				</div>
 			</div>
+
+			{selectedEmailLog && (
+				<EmailLogDetailDialog
+					emailLog={selectedEmailLog}
+					open={!!selectedEmailLog}
+					onOpenChange={(open: boolean) => !open && setSelectedEmailLog(null)}
+				/>
+			)}
 		</div>
 	);
 }

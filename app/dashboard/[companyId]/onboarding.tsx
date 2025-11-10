@@ -11,6 +11,8 @@ interface OnboardingStepData {
 	description: string;
 	emoji: string;
 	videoPlaceholder?: boolean;
+	videoUrl?: string; // URL to the video file (e.g., /videos/step1.mp4 or external URL)
+	videoType?: 'mp4' | 'webm' | 'youtube' | 'vimeo'; // Video format type
 }
 
 const steps: Record<OnboardingStep, OnboardingStepData> = {
@@ -18,30 +20,40 @@ const steps: Record<OnboardingStep, OnboardingStepData> = {
 		title: "Turn your customers into your best marketers.",
 		description: "See how it works",
 		emoji: "🎬",
+		videoUrl: "/videos/Video1.mp4",
+		videoType: "mp4",
 	},
 	1: {
-		title: "Sync your products and set up rewards for your reviewers.",
+		title: "Step 1: Set Up Your Reward with simple setup.",
 		description: "",
 		emoji: "📦",
 		videoPlaceholder: true,
+		videoUrl: "/videos/Video2.mp4",
+		videoType: "mp4",
 	},
 	2: {
-		title: "We email your buyers automatically—so you get video or image reviews without any effort.",
+		title: "Step 2: The Automatic Email. We email your buyers automatically—so you get video or image reviews without any effort.",
 		description: "",
 		emoji: "✉️",
 		videoPlaceholder: true,
+		videoUrl: "/videos/Video3.mp4",
+		videoType: "mp4",
 	},
 	3: {
-		title: "Approve reviews, send rewards, or give feedback with one click.",
+		title: "Step 3: The \"Trust\" in TrustLoop. Approve reviews, send rewards, or give feedback with one click.",
 		description: "",
 		emoji: "✅",
 		videoPlaceholder: true,
+		videoUrl: "/videos/Video4.mp4",
+		videoType: "mp4",
 	},
 	4: {
-		title: "Build trust and boost sales with authentic photo and video reviews.",
+		title: "Step 4: Monitor Your Reviews.",
 		description: "",
 		emoji: "🎥",
 		videoPlaceholder: true,
+		videoUrl: "/videos/Video5.mp4",
+		videoType: "mp4",
 	},
 };
 
@@ -167,34 +179,78 @@ export default function Onboarding({
 								</p>
 							)}
 
-							{/* Video Placeholder */}
-							{currentStepData.videoPlaceholder && (
-								<div className="w-full max-w-3xl aspect-video rounded-xl border-2 border-dashed border-gray-a6 bg-gray-a3/50 backdrop-blur-sm flex items-center justify-center overflow-hidden">
-									<div className="flex flex-col items-center gap-4 text-gray-10">
-										<svg
-											className="w-16 h-16"
-											fill="none"
-											stroke="currentColor"
-											viewBox="0 0 24 24"
-										>
-											<path
-												strokeLinecap="round"
-												strokeLinejoin="round"
-												strokeWidth={2}
-												d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+							{/* Video Player or Placeholder */}
+							{(currentStepData.videoPlaceholder || currentStepData.videoUrl) && (
+								<div className={`w-full max-w-3xl aspect-video rounded-xl overflow-hidden ${
+									currentStepData.videoUrl 
+										? "border border-gray-a4 bg-gray-a2" 
+										: "border-2 border-dashed border-gray-a6 bg-gray-a3/50 backdrop-blur-sm flex items-center justify-center"
+								}`}>
+									{currentStepData.videoUrl ? (
+										// Render actual video if URL is provided
+										currentStepData.videoType === 'youtube' ? (
+											<iframe
+												key={`youtube-${currentStep}`}
+												className="w-full h-full"
+												src={currentStepData.videoUrl}
+												title={currentStepData.title}
+												allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+												allowFullScreen
 											/>
-										</svg>
-										<p className="text-sm font-medium">Video placeholder</p>
-										<p className="text-xs text-gray-9">
-											{currentStep === 1
-												? "Add your product sync demo video here"
-												: currentStep === 2
-													? "Add your automated email demo video here"
-													: currentStep === 3
-														? "Add your approval workflow demo video here"
-														: "Add your review showcase demo video here"}
-										</p>
-									</div>
+										) : currentStepData.videoType === 'vimeo' ? (
+											<iframe
+												key={`vimeo-${currentStep}`}
+												className="w-full h-full"
+												src={currentStepData.videoUrl}
+												title={currentStepData.title}
+												allow="autoplay; fullscreen; picture-in-picture"
+												allowFullScreen
+											/>
+										) : (
+											<video
+												key={`video-${currentStep}-${currentStepData.videoUrl}`}
+												className="w-full h-full object-contain"
+												controls
+												autoPlay
+												loop
+												muted
+												playsInline
+											>
+												<source src={currentStepData.videoUrl} type={`video/${currentStepData.videoType || 'mp4'}`} />
+												Your browser does not support the video tag.
+											</video>
+										)
+									) : (
+										// Show placeholder if no video URL is provided
+										<div className="flex flex-col items-center gap-4 text-gray-10">
+											<svg
+												className="w-16 h-16"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													strokeLinecap="round"
+													strokeLinejoin="round"
+													strokeWidth={2}
+													d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+												/>
+											</svg>
+											<p className="text-sm font-medium">Video placeholder</p>
+											<p className="text-xs text-gray-9">
+												{currentStep === 1
+													? "Add your product sync demo video here"
+													: currentStep === 2
+														? "Add your automated email demo video here"
+														: currentStep === 3
+															? "Add your approval workflow demo video here"
+															: "Add your review showcase demo video here"}
+											</p>
+											<p className="text-xs text-gray-9 mt-2">
+												To add a video, update the step data with videoUrl and videoType
+											</p>
+										</div>
+									)}
 								</div>
 							)}
 

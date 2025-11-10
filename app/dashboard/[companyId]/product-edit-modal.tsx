@@ -138,19 +138,23 @@ export function ProductEditModal({
 			return;
 		}
 
-		// Validate promo code - required if promo codes are available
-		if (promoCodes.length === 0 && !isLoadingPromoCodes) {
-			setError("Promo codes are not available. Please create a promo code in your Whop dashboard first.");
-			return;
-		}
+		// Validate promo code - only required if product is being enabled
+		if (formData.isEnabled) {
+			// Product is enabled - promo code is required
+			if (promoCodes.length === 0 && !isLoadingPromoCodes) {
+				setError("Promo codes are not available. Please create a promo code in your Whop dashboard first.");
+				return;
+			}
 
-						// Check if selected promo code ID exists in the list
-						const selectedPromoExists = promoCodes.some((pc) => pc.id === formData.promoCode);
-						
-						if (!formData.promoCode || formData.promoCode.trim() === "" || !selectedPromoExists) {
-							setError("Please select a valid promo code from the list");
-							return;
-						}
+			// Check if selected promo code ID exists in the list
+			const selectedPromoExists = promoCodes.some((pc) => pc.id === formData.promoCode);
+			
+			if (!formData.promoCode || formData.promoCode.trim() === "" || !selectedPromoExists) {
+				setError("Please select a valid promo code from the list. Promo code is required when product is enabled.");
+				return;
+			}
+		}
+		// If product is disabled, promo code is optional - no validation needed
 
 		startTransition(async () => {
 			try {
@@ -227,7 +231,9 @@ export function ProductEditModal({
 						</div>
 
 						<div className="grid gap-2">
-							<Label htmlFor="promoCode">Promo Code</Label>
+							<Label htmlFor="promoCode">
+								Promo Code {formData.isEnabled && <span className="text-red-600">*</span>}
+							</Label>
 							<Select
 								value={formData.promoCode || undefined}
 								onValueChange={(value) => {
@@ -241,7 +247,7 @@ export function ProductEditModal({
 								disabled={isLoadingPromoCodes || (promoCodes.length === 0 && !isLoadingPromoCodes)}
 							>
 								<SelectTrigger id="promoCode">
-									<SelectValue placeholder={isLoadingPromoCodes ? "Loading promo codes..." : promoCodes.length === 0 ? "No promo codes available" : "Select a promo code"} />
+									<SelectValue placeholder={isLoadingPromoCodes ? "Loading promo codes..." : promoCodes.length === 0 ? "No promo codes available" : formData.isEnabled ? "Select a promo code (required)" : "Select a promo code (optional)"} />
 								</SelectTrigger>
 								{promoCodes.length > 0 && (
 									<SelectContent>
@@ -253,16 +259,22 @@ export function ProductEditModal({
 									</SelectContent>
 								)}
 							</Select>
-							{promoCodes.length === 0 && !isLoadingPromoCodes && (
-								<p className="text-xs text-gray-10">
+							{formData.isEnabled && promoCodes.length === 0 && !isLoadingPromoCodes && (
+								<p className="text-xs text-red-600">
+									Promo code is required when product is enabled.{" "}
 									<a
 										href="https://apps.whop.com/billing/promotions"
 										target="_blank"
 										rel="noopener noreferrer"
-										className="text-blue-600 underline hover:text-blue-700"
+										className="underline hover:text-red-700"
 									>
 										Create a promo code in your Whop dashboard
 									</a>
+								</p>
+							)}
+							{!formData.isEnabled && (
+								<p className="text-xs text-gray-10">
+									Promo code is optional when product is disabled
 								</p>
 							)}
 						</div>
@@ -288,8 +300,11 @@ export function ProductEditModal({
 							variant="classic" 
 							disabled={
 								isPending || 
-								(promoCodes.length === 0 && !isLoadingPromoCodes) ||
-								(promoCodes.length > 0 && (!formData.promoCode || !promoCodes.some((pc) => pc.id === formData.promoCode)))
+								// Only require promo code validation if product is enabled
+								(formData.isEnabled && (
+									(promoCodes.length === 0 && !isLoadingPromoCodes) ||
+									(promoCodes.length > 0 && (!formData.promoCode || !promoCodes.some((pc) => pc.id === formData.promoCode)))
+								))
 							}
 							className="px-6 py-2"
 						>
