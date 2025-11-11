@@ -57,12 +57,12 @@ export function SidebarNavigation() {
 	const dashboardMatch = pathname.match(/\/dashboard\/([^/]+)/);
 	const companyId = dashboardMatch ? dashboardMatch[1] : null;
 
-	// Don't show sidebar on submit pages or during onboarding
+	// Don't show sidebar on submit pages, experience pages, or during onboarding
 	if (!mounted) {
 		return null;
 	}
 
-	if (pathname.startsWith('/submit/') || isOnboarding || !companyId) {
+	if (pathname.startsWith('/submit/') || pathname.startsWith('/experiences/') || isOnboarding || !companyId) {
 		return null;
 	}
 

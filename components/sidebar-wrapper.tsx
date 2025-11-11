@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { useSidebar, SidebarTrigger } from '@/components/ui/sidebar';
 import { SidebarInset } from '@/components/ui/sidebar';
 
 export function SidebarWrapper({ children }: { children: React.ReactNode }) {
 	const { setOpen, setOpenMobile } = useSidebar();
 	const [mounted, setMounted] = useState(false);
+	const pathname = usePathname();
 
 	useEffect(() => {
 		setMounted(true);
@@ -32,6 +34,9 @@ export function SidebarWrapper({ children }: { children: React.ReactNode }) {
 		return () => window.removeEventListener('resize', checkScreenSize);
 	}, [setOpen, setOpenMobile]);
 
+	// Don't show sidebar trigger on experience or submit pages
+	const shouldShowSidebar = mounted && !pathname.startsWith('/experiences/') && !pathname.startsWith('/submit/');
+
 	if (!mounted) {
 		return (
 			<SidebarInset>
@@ -43,9 +48,11 @@ export function SidebarWrapper({ children }: { children: React.ReactNode }) {
 	return (
 		<SidebarInset>
 			{/* Mobile trigger button */}
-			<div className="flex items-center gap-2 p-4 border-b border-gray-a4 md:hidden">
-				<SidebarTrigger />
-			</div>
+			{shouldShowSidebar && (
+				<div className="flex items-center gap-2 p-4 border-b border-gray-a4 md:hidden">
+					<SidebarTrigger />
+				</div>
+			)}
 			{children}
 		</SidebarInset>
 	);
