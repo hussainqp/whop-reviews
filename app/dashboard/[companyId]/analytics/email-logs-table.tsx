@@ -192,72 +192,151 @@ export function EmailLogsTable({ data }: EmailLogsTableProps) {
 		},
 	});
 
+	const statusColors: Record<string, string> = {
+		sent: "text-blue-600",
+		delivered: "text-green-600",
+		opened: "text-green-700",
+		clicked: "text-green-800",
+		failed: "text-red-600",
+		bounced: "text-orange-600",
+	};
+	const statusLabels: Record<string, string> = {
+		sent: "Sent",
+		delivered: "Delivered",
+		opened: "Opened",
+		clicked: "Clicked",
+		failed: "Failed",
+		bounced: "Bounced",
+	};
+	const typeLabels: Record<string, string> = {
+		review_request: "Review Request",
+		reward_delivery: "Reward Delivery",
+		review_rejection: "Review Rejection",
+	};
+
 	return (
 		<div className="w-full">
-			<div className="overflow-x-auto -mx-4 sm:mx-0 md:mx-0">
-				<div className="flex justify-center md:justify-start md:w-full">
-					<div className="rounded-md border border-gray-a4 min-w-[400px] sm:min-w-[600px] md:min-w-0 md:w-full">
-						<Table className="w-full">
-							<TableHeader>
-								{table.getHeaderGroups().map((headerGroup) => (
-									<TableRow key={headerGroup.id}>
-										{headerGroup.headers.map((header) => (
-											<TableHead
-												key={header.id}
+			{/* Mobile Card View */}
+			<div className="md:hidden space-y-3">
+				{table.getRowModel().rows?.length ? (
+					table.getRowModel().rows.map((row) => {
+						const emailLog = row.original;
+						return (
+							<div
+								key={row.id}
+								onClick={() => setSelectedEmailLog(emailLog)}
+								className="rounded-md border border-gray-a4 bg-gray-a2 p-4 cursor-pointer hover:bg-gray-a3 transition-colors"
+							>
+								<div className="flex flex-col gap-3">
+									<div className="flex items-start justify-between gap-2">
+										<div className="flex-1 min-w-0">
+											<div className="font-medium text-sm text-gray-12 truncate">
+												{emailLog.recipient}
+											</div>
+											<div className="text-xs text-gray-10 mt-0.5">
+												{typeLabels[emailLog.emailType] || emailLog.emailType}
+											</div>
+										</div>
+										<span className={`text-xs font-medium whitespace-nowrap ${statusColors[emailLog.status] || "text-gray-10"}`}>
+											{statusLabels[emailLog.status] || emailLog.status}
+										</span>
+									</div>
+									{(emailLog.subject || emailLog.errorMessage || emailLog.createdAt) && (
+										<div className="flex flex-col gap-2 text-xs text-gray-10">
+											{emailLog.subject && (
+												<div className="line-clamp-1">
+													<span className="font-medium">Subject: </span>
+													{emailLog.subject}
+												</div>
+											)}
+											{emailLog.errorMessage && (
+												<div className="text-red-600 line-clamp-2">
+													<span className="font-medium">Error: </span>
+													{emailLog.errorMessage}
+												</div>
+											)}
+											{emailLog.createdAt && (
+												<div>
+													<span className="font-medium">Sent: </span>
+													{new Date(emailLog.createdAt).toLocaleString()}
+												</div>
+											)}
+										</div>
+									)}
+								</div>
+							</div>
+						);
+					})
+				) : (
+					<div className="rounded-md border border-gray-a4 bg-gray-a2 p-8 text-center">
+						<p className="text-sm text-gray-10">No email logs found.</p>
+					</div>
+				)}
+			</div>
+
+			{/* Desktop Table View */}
+			<div className="hidden md:block w-full">
+				<div className="rounded-md border border-gray-a4">
+					<Table className="w-full">
+						<TableHeader>
+							{table.getHeaderGroups().map((headerGroup) => (
+								<TableRow key={headerGroup.id}>
+									{headerGroup.headers.map((header) => (
+										<TableHead
+											key={header.id}
+											className={
+												header.id === "subject" || header.id === "errorMessage"
+													? "hidden md:table-cell"
+													: header.id === "errorMessage"
+													? "hidden lg:table-cell"
+													: ""
+											}
+										>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext()
+													)}
+										</TableHead>
+									))}
+								</TableRow>
+							))}
+						</TableHeader>
+						<TableBody>
+							{table.getRowModel().rows?.length ? (
+								table.getRowModel().rows.map((row) => (
+									<TableRow
+										key={row.id}
+										data-state={row.getIsSelected() && "selected"}
+										onClick={() => setSelectedEmailLog(row.original)}
+										className="cursor-pointer hover:bg-gray-a3"
+									>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell
+												key={cell.id}
 												className={
-													header.id === "subject" || header.id === "errorMessage"
+													cell.column.id === "subject" || cell.column.id === "errorMessage"
 														? "hidden md:table-cell"
-														: header.id === "errorMessage"
+														: cell.column.id === "errorMessage"
 														? "hidden lg:table-cell"
 														: ""
 												}
 											>
-												{header.isPlaceholder
-													? null
-													: flexRender(
-															header.column.columnDef.header,
-															header.getContext()
-														)}
-											</TableHead>
+												{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											</TableCell>
 										))}
 									</TableRow>
-								))}
-							</TableHeader>
-							<TableBody>
-								{table.getRowModel().rows?.length ? (
-									table.getRowModel().rows.map((row) => (
-										<TableRow
-											key={row.id}
-											data-state={row.getIsSelected() && "selected"}
-											onClick={() => setSelectedEmailLog(row.original)}
-											className="cursor-pointer hover:bg-gray-a3"
-										>
-											{row.getVisibleCells().map((cell) => (
-												<TableCell
-													key={cell.id}
-													className={
-														cell.column.id === "subject" || cell.column.id === "errorMessage"
-															? "hidden md:table-cell"
-															: cell.column.id === "errorMessage"
-															? "hidden lg:table-cell"
-															: ""
-													}
-												>
-													{flexRender(cell.column.columnDef.cell, cell.getContext())}
-												</TableCell>
-											))}
-										</TableRow>
-									))
-								) : (
-									<TableRow>
-										<TableCell colSpan={emailLogColumns.length} className="h-24 text-center">
-											No email logs found.
-										</TableCell>
-									</TableRow>
-								)}
-							</TableBody>
-						</Table>
-					</div>
+								))
+							) : (
+								<TableRow>
+									<TableCell colSpan={emailLogColumns.length} className="h-24 text-center">
+										No email logs found.
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
 				</div>
 			</div>
 			<div className="flex flex-col sm:flex-row items-center justify-between px-2 py-4 gap-4">

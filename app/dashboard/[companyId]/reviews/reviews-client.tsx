@@ -38,12 +38,12 @@ export function ReviewsClient({ companyId, initialStatus, initialReviews }: Revi
 		};
 		return (
 			<div className="flex flex-col gap-4">
-				<div className="flex justify-between items-center gap-4">
+				<div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
 					<div>
 						<h1 className="text-6 sm:text-7 lg:text-9 font-bold">Review Queue</h1>
 					</div>
 					<Select value={status} onValueChange={handleStatusChange} disabled={isPending}>
-						<SelectTrigger className="w-[200px]">
+						<SelectTrigger className="w-full sm:w-[200px]">
 							<SelectValue placeholder="Filter by status" />
 						</SelectTrigger>
 						<SelectContent>

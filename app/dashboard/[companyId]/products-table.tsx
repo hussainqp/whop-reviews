@@ -184,6 +184,13 @@ export function ProductsTable({ data, isLoading = false, companyId }: ProductsTa
 		);
 	}
 
+	const statusColors: Record<string, { bg: string; text: string }> = {
+		visible: { bg: "#22c55e", text: "Visible" },
+		hidden: { bg: "#6b7280", text: "Hidden" },
+		archived: { bg: "#9ca3af", text: "Archived" },
+		quick_link: { bg: "#3b82f6", text: "Quick Link" },
+	};
+
 	return (
 		<div className="w-full">
 			<div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between py-4 gap-4">
@@ -196,78 +203,157 @@ export function ProductsTable({ data, isLoading = false, companyId }: ProductsTa
 					className="w-full sm:max-w-sm"
 				/>
 			</div>
-			<div className="rounded-md border border-gray-a4 overflow-x-auto -mx-4 sm:mx-0">
-				<div className="min-w-[400px] sm:min-w-[600px]">
+
+			{/* Mobile Card View */}
+			<div className="md:hidden space-y-3">
+				{table.getRowModel().rows?.length ? (
+					table.getRowModel().rows.map((row) => {
+						const product = row.original;
+						const statusColor = statusColors[product.status] || statusColors.visible;
+						return (
+							<div
+								key={row.id}
+								className="rounded-md border border-gray-a4 bg-gray-a2 p-4"
+							>
+								<div className="flex flex-col gap-3">
+									<div className="flex items-start justify-between gap-2">
+										<div className="flex-1 min-w-0">
+											<div className="font-medium text-sm text-gray-12 truncate">
+												{product.productName}
+											</div>
+										</div>
+										<button
+											onClick={() => handleEdit(product)}
+											className="inline-flex items-center justify-center h-8 w-8 p-0 rounded-md hover:bg-gray-a3 transition-colors text-gray-10 shrink-0"
+											type="button"
+											title="Edit product"
+										>
+											<Edit className="h-4 w-4" />
+											<span className="sr-only">Edit</span>
+										</button>
+									</div>
+									<div className="flex flex-col gap-2 text-xs text-gray-10">
+										<div className="flex items-center gap-2">
+											<span className="font-medium">Enabled:</span>
+											<div className="flex items-center gap-2">
+												<div
+													className="h-3 w-3 rounded-full"
+													style={{
+														backgroundColor: product.isEnabled ? "#22c55e" : "#ef4444",
+													}}
+												/>
+												<span>{product.isEnabled ? "Yes" : "No"}</span>
+											</div>
+										</div>
+										<div className="flex items-center gap-2">
+											<span className="font-medium">Status:</span>
+											<div className="flex items-center gap-2">
+												<div
+													className="h-3 w-3 rounded-full"
+													style={{
+														backgroundColor: statusColor.bg,
+													}}
+												/>
+												<span>{statusColor.text}</span>
+											</div>
+										</div>
+										{product.reviewType && (
+											<div className="flex items-center gap-2">
+												<span className="font-medium">Review Type:</span>
+												<span className="capitalize">{product.reviewType}</span>
+											</div>
+										)}
+										{product.promoCodeName && (
+											<div className="flex items-center gap-2">
+												<span className="font-medium">Promo Code:</span>
+												<span className="font-mono">{product.promoCodeName}</span>
+											</div>
+										)}
+									</div>
+								</div>
+							</div>
+						);
+					})
+				) : (
+					<div className="rounded-md border border-gray-a4 bg-gray-a2 p-8 text-center">
+						<p className="text-sm text-gray-10">No products found.</p>
+					</div>
+				)}
+			</div>
+
+			{/* Desktop Table View */}
+			<div className="hidden md:block w-full">
+				<div className="rounded-md border border-gray-a4">
 					<Table>
-					<TableHeader>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
+						<TableHeader>
+							{table.getHeaderGroups().map((headerGroup) => (
+								<TableRow key={headerGroup.id}>
 									{headerGroup.headers.map((header) => {
-									if (header.id === "actions") {
+										if (header.id === "actions") {
+											return (
+												<TableHead key={header.id} className="w-[100px] sm:w-[150px]">
+													Actions
+												</TableHead>
+											);
+										}
 										return (
-											<TableHead key={header.id} className="w-[100px] sm:w-[150px]">
-												Actions
+											<TableHead key={header.id} className={header.id === "status" || header.id === "reviewType" || header.id === "promoCodeName" ? "hidden md:table-cell" : ""}>
+												{header.isPlaceholder
+													? null
+													: flexRender(
+															header.column.columnDef.header,
+															header.getContext()
+														)}
 											</TableHead>
 										);
-									}
-									return (
-										<TableHead key={header.id} className={header.id === "status" || header.id === "reviewType" || header.id === "promoCodeName" ? "hidden md:table-cell" : ""}>
-											{header.isPlaceholder
-												? null
-												: flexRender(
-														header.column.columnDef.header,
-														header.getContext()
-													)}
-										</TableHead>
-									);
-								})}
-							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									data-state={row.getIsSelected() && "selected"}
-								>
-									{row.getVisibleCells().map((cell) => {
-									if (cell.column.id === "actions") {
-										const product = row.original;
-										return (
-											<TableCell key={cell.id}>
-												<button
-													onClick={() => handleEdit(product)}
-													className="inline-flex items-center justify-center h-8 w-8 p-0 rounded-md hover:bg-gray-a3 transition-colors text-gray-10"
-													type="button"
-													title="Edit product"
-												>
-													<Edit className="h-3 w-3 sm:h-4 sm:w-4" />
-													<span className="sr-only">Edit</span>
-												</button>
-											</TableCell>
-										);
-									}
-									return (
-										<TableCell 
-											key={cell.id}
-											className={cell.column.id === "status" || cell.column.id === "reviewType" || cell.column.id === "promoCodeName" ? "hidden md:table-cell" : ""}
-										>
-											{flexRender(cell.column.columnDef.cell, cell.getContext())}
-										</TableCell>
-									);
-								})}
+									})}
 								</TableRow>
-							))
-						) : (
-							<TableRow>
-								<TableCell colSpan={columns.length + 1} className="h-24 text-center">
-									No products found.
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
+							))}
+						</TableHeader>
+						<TableBody>
+							{table.getRowModel().rows?.length ? (
+								table.getRowModel().rows.map((row) => (
+									<TableRow
+										key={row.id}
+										data-state={row.getIsSelected() && "selected"}
+									>
+										{row.getVisibleCells().map((cell) => {
+											if (cell.column.id === "actions") {
+												const product = row.original;
+												return (
+													<TableCell key={cell.id}>
+														<button
+															onClick={() => handleEdit(product)}
+															className="inline-flex items-center justify-center h-8 w-8 p-0 rounded-md hover:bg-gray-a3 transition-colors text-gray-10"
+															type="button"
+															title="Edit product"
+														>
+															<Edit className="h-3 w-3 sm:h-4 sm:w-4" />
+															<span className="sr-only">Edit</span>
+														</button>
+													</TableCell>
+												);
+											}
+											return (
+												<TableCell 
+													key={cell.id}
+													className={cell.column.id === "status" || cell.column.id === "reviewType" || cell.column.id === "promoCodeName" ? "hidden md:table-cell" : ""}
+												>
+													{flexRender(cell.column.columnDef.cell, cell.getContext())}
+												</TableCell>
+											);
+										})}
+									</TableRow>
+								))
+							) : (
+								<TableRow>
+									<TableCell colSpan={columns.length + 1} className="h-24 text-center">
+										No products found.
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
 				</div>
 			</div>
 			<div className="flex-1 text-xs sm:text-sm text-gray-10">

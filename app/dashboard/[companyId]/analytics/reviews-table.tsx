@@ -179,58 +179,121 @@ export function ReviewsTable({ data }: ReviewsTableProps) {
 		},
 	});
 
+	const statusColors: Record<string, string> = {
+		pending_submission: "text-yellow-600",
+		pending_approval: "text-orange-600",
+		approved: "text-green-600",
+		rejected: "text-red-600",
+	};
+	const statusLabels: Record<string, string> = {
+		pending_submission: "Pending",
+		pending_approval: "Pending",
+		approved: "Approved",
+		rejected: "Rejected",
+	};
+
 	return (
 		<div className="w-full">
-			<div className="overflow-x-auto -mx-4 sm:mx-0 md:mx-0">
-				<div className="flex justify-center md:justify-start md:w-full">
-					<div className="rounded-md border border-gray-a4 min-w-[400px] sm:min-w-[600px] md:min-w-0 md:w-full">
-				<Table className="w-full">
-					<TableHeader>
-						{table.getHeaderGroups().map((headerGroup) => (
-							<TableRow key={headerGroup.id}>
-								{headerGroup.headers.map((header) => (
-									<TableHead 
-										key={header.id}
-										className={header.id === "rating" || header.id === "fileType" || header.id === "createdAt" ? "hidden md:table-cell" : ""}
-									>
-										{header.isPlaceholder
-											? null
-											: flexRender(
-													header.column.columnDef.header,
-													header.getContext()
-												)}
-									</TableHead>
-								))}
-							</TableRow>
-						))}
-					</TableHeader>
-					<TableBody>
-						{table.getRowModel().rows?.length ? (
-							table.getRowModel().rows.map((row) => (
-								<TableRow
-									key={row.id}
-									data-state={row.getIsSelected() && "selected"}
-								>
-									{row.getVisibleCells().map((cell) => (
-										<TableCell 
-											key={cell.id}
-											className={cell.column.id === "rating" || cell.column.id === "fileType" || cell.column.id === "createdAt" ? "hidden md:table-cell" : ""}
+			{/* Mobile Card View */}
+			<div className="md:hidden space-y-3">
+				{table.getRowModel().rows?.length ? (
+					table.getRowModel().rows.map((row) => {
+						const review = row.original;
+						return (
+							<div
+								key={row.id}
+								className="rounded-md border border-gray-a4 bg-gray-a2 p-4"
+							>
+								<div className="flex flex-col gap-3">
+									<div className="flex items-start justify-between gap-2">
+										<div className="flex-1 min-w-0">
+											<div className="font-medium text-sm text-gray-12 truncate">
+												{review.customerName}
+											</div>
+											<div className="text-xs text-gray-10 mt-0.5 truncate">
+												{review.productName}
+											</div>
+										</div>
+										<span className={`text-xs font-medium whitespace-nowrap ${statusColors[review.status] || "text-gray-10"}`}>
+											{statusLabels[review.status] || review.status}
+										</span>
+									</div>
+									{(review.rating || review.fileType || review.createdAt) && (
+										<div className="flex flex-wrap items-center gap-3 text-xs text-gray-10">
+											{review.rating && (
+												<div className="flex items-center gap-1">
+													<span>{review.rating}</span>
+													<span className="text-yellow-600">★</span>
+												</div>
+											)}
+											{review.fileType && (
+												<span className="capitalize">{review.fileType}</span>
+											)}
+											{review.createdAt && (
+												<span>Created: {new Date(review.createdAt).toLocaleDateString()}</span>
+											)}
+										</div>
+									)}
+								</div>
+							</div>
+						);
+					})
+				) : (
+					<div className="rounded-md border border-gray-a4 bg-gray-a2 p-8 text-center">
+						<p className="text-sm text-gray-10">No reviews found.</p>
+					</div>
+				)}
+			</div>
+
+			{/* Desktop Table View */}
+			<div className="hidden md:block w-full">
+				<div className="rounded-md border border-gray-a4">
+					<Table className="w-full">
+						<TableHeader>
+							{table.getHeaderGroups().map((headerGroup) => (
+								<TableRow key={headerGroup.id}>
+									{headerGroup.headers.map((header) => (
+										<TableHead 
+											key={header.id}
+											className={header.id === "rating" || header.id === "fileType" || header.id === "createdAt" ? "hidden md:table-cell" : ""}
 										>
-											{flexRender(cell.column.columnDef.cell, cell.getContext())}
-										</TableCell>
+											{header.isPlaceholder
+												? null
+												: flexRender(
+														header.column.columnDef.header,
+														header.getContext()
+													)}
+										</TableHead>
 									))}
 								</TableRow>
-							))
-						) : (
-							<TableRow>
-								<TableCell colSpan={columns.length} className="h-24 text-center">
-									No reviews found.
-								</TableCell>
-							</TableRow>
-						)}
-					</TableBody>
-				</Table>
-					</div>
+							))}
+						</TableHeader>
+						<TableBody>
+							{table.getRowModel().rows?.length ? (
+								table.getRowModel().rows.map((row) => (
+									<TableRow
+										key={row.id}
+										data-state={row.getIsSelected() && "selected"}
+									>
+										{row.getVisibleCells().map((cell) => (
+											<TableCell 
+												key={cell.id}
+												className={cell.column.id === "rating" || cell.column.id === "fileType" || cell.column.id === "createdAt" ? "hidden md:table-cell" : ""}
+											>
+												{flexRender(cell.column.columnDef.cell, cell.getContext())}
+											</TableCell>
+										))}
+									</TableRow>
+								))
+							) : (
+								<TableRow>
+									<TableCell colSpan={columns.length} className="h-24 text-center">
+										No reviews found.
+									</TableCell>
+								</TableRow>
+							)}
+						</TableBody>
+					</Table>
 				</div>
 			</div>
 			<div className="flex flex-col sm:flex-row items-center justify-between px-2 py-4 gap-4">

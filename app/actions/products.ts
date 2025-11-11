@@ -7,7 +7,7 @@ import db from "@/lib/db";
 import { productConfigs, merchants } from "@/lib/db/schema";
 import { eq, inArray } from "drizzle-orm";
 
-export const getProducts = async (companyId: string, types: string[] = ["regular", "experience_upsell", "app", "api_only"]) => {
+export const getProducts = async (companyId: string, types: string[] = ["regular"]) => {
 	try {
 		if (!companyId) {
 			throw new Error("companyId is required");

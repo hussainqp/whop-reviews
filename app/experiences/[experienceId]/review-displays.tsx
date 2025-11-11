@@ -306,9 +306,9 @@ export function ReviewDisplay({ reviews, format }: ReviewDisplayProps) {
 		return (
 			<div className="flex min-h-[400px] items-center justify-center rounded-lg border border-gray-a4 bg-gray-a2">
 				<div className="text-center">
-					<p className="text-lg text-gray-10">No approved reviews yet</p>
+					<p className="text-lg text-gray-10">No Reviews Yet</p>
 					<p className="mt-2 text-sm text-gray-10">
-						Check back soon! Reviews will appear here once they are approved.
+						Check back soon!
 					</p>
 				</div>
 			</div>

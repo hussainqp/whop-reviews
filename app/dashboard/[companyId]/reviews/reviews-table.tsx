@@ -171,10 +171,76 @@ export function ReviewsTable({ data, status }: ReviewsTableProps) {
 		setSelectedReview(review);
 	};
 
+	const statusColors: Record<string, string> = {
+		pending_submission: "text-yellow-600",
+		pending_approval: "text-orange-600",
+		approved: "text-green-600",
+		rejected: "text-red-600",
+	};
+	const statusLabels: Record<string, string> = {
+		pending_submission: "Pending",
+		pending_approval: "Pending",
+		approved: "Approved",
+		rejected: "Rejected",
+	};
+
 	return (
 		<>
-			<div className="w-full overflow-x-auto -mx-4 sm:mx-0">
-				<div className="rounded-md border border-gray-a4 min-w-[400px] sm:min-w-[600px]">
+			{/* Mobile Card View */}
+			<div className="md:hidden space-y-3">
+				{table.getRowModel().rows?.length ? (
+					table.getRowModel().rows.map((row) => {
+						const review = row.original;
+						return (
+							<div
+								key={row.id}
+								onClick={() => handleRowClick(review)}
+								className="rounded-md border border-gray-a4 bg-gray-a2 p-4 cursor-pointer hover:bg-gray-a3 transition-colors"
+							>
+								<div className="flex flex-col gap-3">
+									<div className="flex items-start justify-between gap-2">
+										<div className="flex-1 min-w-0">
+											<div className="font-medium text-sm text-gray-12 truncate">
+												{review.customerName}
+											</div>
+											<div className="text-xs text-gray-10 mt-0.5 truncate">
+												{review.productName}
+											</div>
+										</div>
+										<span className={`text-xs font-medium whitespace-nowrap ${statusColors[review.status] || "text-gray-10"}`}>
+											{statusLabels[review.status] || review.status}
+										</span>
+									</div>
+									{(review.rating || review.fileType || review.submittedAt) && (
+										<div className="flex flex-wrap items-center gap-3 text-xs text-gray-10">
+											{review.rating && (
+												<div className="flex items-center gap-1">
+													<span>{review.rating}</span>
+													<span className="text-yellow-600">★</span>
+												</div>
+											)}
+											{review.fileType && (
+												<span className="capitalize">{review.fileType}</span>
+											)}
+											{review.submittedAt && (
+												<span>{new Date(review.submittedAt).toLocaleDateString()}</span>
+											)}
+										</div>
+									)}
+								</div>
+							</div>
+						);
+					})
+				) : (
+					<div className="rounded-md border border-gray-a4 bg-gray-a2 p-8 text-center">
+						<p className="text-sm text-gray-10">No reviews found.</p>
+					</div>
+				)}
+			</div>
+
+			{/* Desktop Table View */}
+			<div className="hidden md:block w-full">
+				<div className="rounded-md border border-gray-a4">
 					<Table>
 						<TableHeader>
 							{table.getHeaderGroups().map((headerGroup) => (
