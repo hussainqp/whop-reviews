@@ -12,6 +12,7 @@ interface ReviewUploadFormProps {
 	reviewType: ReviewType;
 	productName: string;
 	customerName: string;
+	onSuccess?: () => void;
 }
 
 export function ReviewUploadForm({
@@ -19,6 +20,7 @@ export function ReviewUploadForm({
 	reviewType,
 	productName,
 	customerName,
+	onSuccess,
 }: ReviewUploadFormProps) {
 	const [selectedFile, setSelectedFile] = useState<File | null>(null);
 	const [comment, setComment] = useState("");
@@ -146,6 +148,9 @@ export function ReviewUploadForm({
 
 			await submitReview(formData);
 			setSuccess(true);
+			if (onSuccess) {
+				onSuccess();
+			}
 		} catch (err) {
 			setError(err instanceof Error ? err.message : "An error occurred");
 		} finally {

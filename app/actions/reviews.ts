@@ -293,6 +293,53 @@ export async function getApprovedReviewsByExperience(experienceId: string, dashb
 	}
 }
 
+export async function getPendingSubmissionsByExperience(experienceId: string, customerWhopId: string) {
+	try {
+		// Get merchant from experienceId
+		const merchant = await getExperienceDataFromDBPublic(experienceId);
+
+		if (!merchant) {
+			return [];
+		}
+		console.log('merchant', merchant);
+		console.log('customerWhopId', customerWhopId);
+		console.log('experienceId', experienceId);
+
+		// Fetch pending submissions for this user with product config
+		const result = await db
+			.select({
+				review: reviews,
+				productConfig: productConfigs,
+			})
+			.from(reviews)
+			.innerJoin(productConfigs, eq(reviews.productConfigId, productConfigs.id))
+			.where(
+				and(
+					eq(reviews.merchantId, merchant.id),
+					eq(reviews.customerWhopId, customerWhopId),
+					eq(reviews.status, "pending_submission"),
+					gt(reviews.tokenExpiresAt, new Date()) // Only non-expired tokens
+				)
+			)
+			.orderBy(desc(reviews.createdAt));
+
+		return result.map(({ review, productConfig }) => ({
+			id: review.id,
+			customerName: review.customerName,
+			customerEmail: review.customerEmail,
+			status: review.status,
+			submissionToken: review.submissionToken,
+			tokenExpiresAt: review.tokenExpiresAt ? review.tokenExpiresAt.toISOString() : null,
+			createdAt: review.createdAt ? review.createdAt.toISOString() : null,
+			productName: productConfig.productName,
+			reviewType: productConfig.reviewType,
+		}));
+	} catch (err: unknown) {
+		console.error('[GET PENDING SUBMISSIONS BY EXPERIENCE] Error while fetching pending submissions:', err);
+		return [];
+	}
+}
+
 export async function approveReview(reviewId: string) {
 	try {
 		// Fetch review with product config and merchant info
