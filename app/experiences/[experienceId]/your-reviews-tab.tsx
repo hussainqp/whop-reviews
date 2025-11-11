@@ -86,13 +86,13 @@ export function YourReviewsTab({ experienceId, userId }: YourReviewsTabProps) {
 				>
 					← Back to list
 				</button>
-				<div className="bg-gradient-to-br from-gray-900 via-black to-gray-900 rounded-xl p-4 sm:p-6">
+				<div className="bg-gradient-to-br from-gray-a2 via-gray-a1 to-gray-a2 rounded-xl p-4 sm:p-6 border border-gray-a4">
 					<div className="mb-4 text-center">
-						<h2 className="text-xl sm:text-2xl font-semibold text-white mb-2">
+						<h2 className="text-xl sm:text-2xl font-semibold text-gray-12 mb-2">
 							💬 Submit Your Review
 						</h2>
-						<p className="text-base sm:text-lg text-gray-200">
-							Share your experience with <strong className="text-white">{selectedSubmission.productName}</strong>
+						<p className="text-base sm:text-lg text-gray-10">
+							Share your experience with <strong className="text-gray-12">{selectedSubmission.productName}</strong>
 						</p>
 					</div>
 					<ReviewUploadForm

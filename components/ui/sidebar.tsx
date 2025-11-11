@@ -186,13 +186,9 @@ const Sidebar = React.forwardRef<
 					<div
 						data-state={openMobile ? "open" : "closed"}
 						className={cn(
-							"fixed inset-y-0 z-50 flex h-svh w-[--sidebar-width] flex-col border-r border-gray-a4 text-gray-12 transition-transform duration-200 ease-linear md:hidden",
+							"fixed inset-y-0 z-50 flex h-svh w-[--sidebar-width] flex-col bg-gray-a1 border-r border-gray-a4 text-gray-12 transition-transform duration-200 ease-linear md:hidden",
 							openMobile ? "translate-x-0" : "-translate-x-full"
 						)}
-						style={{ 
-							backgroundColor: 'rgb(10, 10, 10)',
-							backdropFilter: 'none'
-						}}
 					>
 						{children}
 					</div>
@@ -268,13 +264,9 @@ const Sidebar = React.forwardRef<
 				<div
 					data-state={openMobile ? "open" : "closed"}
 					className={cn(
-						"fixed inset-y-0 z-50 flex h-svh w-[--sidebar-width] flex-col border-r border-gray-a4 text-gray-12 transition-transform duration-200 ease-linear md:hidden",
+						"fixed inset-y-0 z-50 flex h-svh w-[--sidebar-width] flex-col bg-gray-a1 border-r border-gray-a4 text-gray-12 transition-transform duration-200 ease-linear md:hidden",
 						openMobile ? "translate-x-0" : "-translate-x-full"
 					)}
-					style={{ 
-						backgroundColor: 'rgb(10, 10, 10)',
-						backdropFilter: 'none'
-					}}
 				>
 					{children}
 				</div>
