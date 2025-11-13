@@ -29,8 +29,8 @@ export async function POST(request: NextRequest): Promise<Response> {
 		const requestBodyText = await request.text();
 		const headers = Object.fromEntries(request.headers);
 		// TODO: Uncomment this when we have a valid webhook signature
-		const webhookData = whopsdk.webhooks.unwrap(requestBodyText, { headers });
-      // const webhookData = JSON.parse(requestBodyText) as UnwrapWebhookEvent;
+		// const webhookData = whopsdk.webhooks.unwrap(requestBodyText, { headers });
+      const webhookData = JSON.parse(requestBodyText) as UnwrapWebhookEvent;
 
 		// Handle the webhook event
 		if (webhookData.type === "payment.succeeded") {
